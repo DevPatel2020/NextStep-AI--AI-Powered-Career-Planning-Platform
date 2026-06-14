@@ -12,6 +12,7 @@ CareerSence is a modern web application designed to help individuals navigate th
 - **🗺️ Dynamic Roadmaps**: personalized, step-by-step guides to help you reach your career objectives, generated through AI analysis.
 - **💼 Job Hunting & Tracking**: Search for live job listings and track your application status (Saved, Applied, Interviewing, etc.) using integrated job board data.
 - **📝 AI Career Quiz**: A two-phase interactive assessment that analyzes your profile to provide tailored career recommendations.
+- **⚡ AI Job Tailoring Workspace**: Customize your resume and cover letter using Gemini AI to match specific job requirements. Generates a print-ready LaTeX-style resume PDF, copies cover letters, and auto-drafts answers for screening questions.
 - **🌓 Dark Mode Support**: A premium, responsive interface with seamless dark/light mode transitions.
 - **👨‍💼 Admin Panel**: Comprehensive dashboard for administrators to monitor platform activity, user statistics, and system health (restricted to `.admin.com` emails).
 
@@ -23,8 +24,8 @@ CareerSence is a modern web application designed to help individuals navigate th
 - **State & Flow**: [Framer Motion](https://www.framer.com/motion/), [@xyflow/react](https://reactflow.dev/) (React Flow)
 - **Backend & Database**: [Prisma ORM](https://www.prisma.io/), [PostgreSQL](https://www.postgresql.org/)
 - **Authentication**: [NextAuth.js](https://next-auth.js.org/)
-- **AI Integration**: [Groq API](https://groq.com/) (for roadmap and tree generation)
-- **External APIs**: JSearch Integration for job listings
+- **AI Integration**: [Groq API](https://groq.com/) (for roadmap/tree generation), [Google Gemini API](https://ai.google.dev/) (for AI resume and cover letter tailoring)
+- **External APIs**: JSearch Integration for job listings (LinkedIn, Indeed, Naukri)
 
 ---
 
@@ -35,6 +36,7 @@ CareerSence is a modern web application designed to help individuals navigate th
 - Node.js (v18 or later)
 - PostgreSQL database
 - A Groq API key
+- A Google Gemini API key
 
 ### Installation
 
@@ -52,10 +54,12 @@ CareerSence is a modern web application designed to help individuals navigate th
 3. **Set up Environment Variables**:
    Create a `.env` file in the root directory and add the following:
    ```env
-   DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/careersence?schema=public"
-   NEXTAUTH_SECRET=your_nextauth_secret_here
-   NEXTAUTH_URL=http://localhost:3000
-   GROQ_API_KEY=your_groq_api_key_here
+    DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/careersence?schema=public"
+    NEXTAUTH_SECRET=your_nextauth_secret_here
+    NEXTAUTH_URL=http://localhost:3000
+    GROQ_API_KEY=your_groq_api_key_here
+    GEMINI_API_KEY=your_gemini_api_key_here
+    GEMINI_MODEL=gemini-2.5-flash # (optional, defaults to gemini-2.5-flash)
    ```
 
 4. **Run Database Migrations**:

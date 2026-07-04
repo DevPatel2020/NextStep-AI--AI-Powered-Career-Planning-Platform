@@ -81,7 +81,7 @@ export default function CareerQuizPage() {
         maxWidth="xl"
       >
         <Card padding="lg">
-          <div style={{ display: "flex", flexDirection: "column", itemsCenter: "center", padding: "32px 0", textAlign: "center", gap: "16px" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "32px 0", textAlign: "center", gap: "16px" }}>
             <div
               style={{
                 display: "flex",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -33,7 +33,7 @@ const sortOptions = [
   { value: "shortest", label: "Shortest time" },
 ];
 
-export default function LearningResourcesPage() {
+function LearningResourcesContent() {
   const searchParams = useSearchParams();
   const { data: session } = useSession();
   const [searchInput, setSearchInput] = useState(searchParams.get("q") ?? "");
@@ -218,5 +218,13 @@ export default function LearningResourcesPage() {
         </div>
       )}
     </PageShell>
+  );
+}
+
+export default function LearningResourcesPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LearningResourcesContent />
+    </Suspense>
   );
 }

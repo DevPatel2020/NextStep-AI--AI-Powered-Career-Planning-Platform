@@ -696,9 +696,11 @@ export default function CareerTreePage() {
             {/* ── LEFT: Milestone Details ── */}
             <div className="flex flex-col gap-5">
               {/* Timeframe Badge */}
-              <Badge variant="primary" size="sm" style={{ alignSelf: "flex-start" }}>
-                {selectedMilestone.timeframe.toUpperCase()}
-              </Badge>
+              <div style={{ alignSelf: "flex-start" }}>
+                <Badge variant="primary" size="sm">
+                  {selectedMilestone.timeframe.toUpperCase()}
+                </Badge>
+              </div>
 
               {/* Skills */}
               <div>

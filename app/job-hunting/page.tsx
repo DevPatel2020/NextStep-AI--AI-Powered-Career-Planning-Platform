@@ -222,7 +222,6 @@ interface SavedJob {
   updatedAt: string;
 }
 
-type JobStatus = "saved" | "applied" | "interviewing" | "offer" | "rejected";
 
 const STATUS_OPTIONS: { value: JobStatus; label: string }[] = [
   { value: "saved", label: "Saved" },
@@ -1431,7 +1430,7 @@ export default function JobHuntingPage() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px" }}>
                     <h3 className="type-title-md" style={{ color: "var(--color-ink)", margin: 0 }}>{job.title.toUpperCase()}</h3>
-                    <Badge variant={statusVariant[job.status]} size="sm">
+                    <Badge variant={statusVariant[job.status as JobStatus]} size="sm">
                       {job.status.toUpperCase()}
                     </Badge>
                   </div>

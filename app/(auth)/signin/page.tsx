@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Checkbox } from "@/components/ui/Checkbox";
 
-function SignInForm() {
+function SignInContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/overview";
@@ -177,7 +177,7 @@ function SignInForm() {
   );
 }
 
-export default function SignInPage() {
+export default function SignIn() {
   return (
     <Suspense
       fallback={

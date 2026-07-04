@@ -23,11 +23,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("theme", "dark");
   }, []);
 
-  // Suppress hydration during SSR
-  if (!mounted) {
-    return <>{children}</>;
-  }
-
   return (
     <ThemeContext.Provider value={{ theme: "dark", toggleTheme: () => {} }}>
       {children}

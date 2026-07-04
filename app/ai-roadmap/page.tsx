@@ -135,7 +135,7 @@ export default function AIRoadmapPage() {
           >
             <Card padding="lg" style={{ maxWidth: "640px", margin: "0 auto" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "32px" }}>
-                <div style={{ display: "flex", h: "48px", w: "48px", shrink: 0, alignItems: "center", justifyContent: "center", border: "1px solid var(--color-hairline-strong)", color: "var(--color-ink)" }}>
+                <div style={{ display: "flex", height: "48px", width: "48px", flexShrink: 0, alignItems: "center", justifyContent: "center", border: "1px solid var(--color-hairline-strong)", color: "var(--color-ink)" }}>
                   <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                   </svg>

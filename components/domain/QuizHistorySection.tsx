@@ -190,9 +190,11 @@ export function QuizHistorySection({ quizzes: initialQuizzes }: { quizzes: QuizE
                                                         </p>
                                                     </div>
                                                     {topMatch && (
-                                                        <Badge variant="success" size="sm" style={{ flexShrink: 0 }}>
-                                                            {topMatch.matchScore}%
-                                                        </Badge>
+                                                        <div style={{ flexShrink: 0 }}>
+                                                          <Badge variant="success" size="sm">
+                                                              {topMatch.matchScore}%
+                                                          </Badge>
+                                                        </div>
                                                     )}
                                                     <svg
                                                       style={{

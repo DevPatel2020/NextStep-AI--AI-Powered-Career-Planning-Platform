@@ -2,7 +2,9 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light" | "dark";
+// Bugatti design system is permanently dark.
+// ThemeProvider is kept for API compatibility but defaults to dark.
+type Theme = "dark";
 
 interface ThemeContextType {
   theme: Theme;
@@ -12,34 +14,22 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const stored = localStorage.getItem("theme") as Theme | null;
-    if (stored === "dark" || stored === "light") {
-      setTheme(stored);
-    }
+    // Always ensure dark class on root
+    document.documentElement.classList.add("dark");
+    localStorage.setItem("theme", "dark");
   }, []);
 
-  useEffect(() => {
-    if (!mounted) return;
-    const root = document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-    localStorage.setItem("theme", theme);
-  }, [theme, mounted]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
+  // Suppress hydration during SSR
+  if (!mounted) {
+    return <>{children}</>;
+  }
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme: "dark", toggleTheme: () => {} }}>
       {children}
     </ThemeContext.Provider>
   );

@@ -7,7 +7,6 @@ import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Checkbox } from "@/components/ui/Checkbox";
-import { Card } from "@/components/ui/Card";
 
 function SignInForm() {
   const router = useRouter();
@@ -46,7 +45,6 @@ function SignInForm() {
         setFormError("Invalid email or password. Please try again.");
         return;
       }
-      // Check role — redirect admin to their dashboard
       const sessionRes = await fetch("/api/auth/session");
       const session = await sessionRes.json();
       if (session?.user?.role === "admin") {
@@ -63,91 +61,117 @@ function SignInForm() {
   };
 
   return (
-    <div className="w-full max-w-6xl">
-      <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-        <div className="hidden flex-col justify-center lg:flex">
-          <h2 className="text-2xl font-bold text-[var(--color-text)]">
-            Welcome back
-          </h2>
-          <p className="mt-2 text-[var(--color-text-muted)]">
-            Sign in to access your career overview, AI roadmap, and personalized
-            learning resources.
-          </p>
-          <div className="mt-8 flex h-48 items-center justify-center rounded-xl border border-[var(--color-border)] bg-[var(--color-primary-50)] text-[var(--color-primary-600)]">
-            <span className="text-sm font-medium">Illustration placeholder</span>
-          </div>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "var(--color-canvas)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "40px",
+      }}
+    >
+      <div style={{ width: "100%", maxWidth: "420px" }}>
+
+        {/* Wordmark */}
+        <div style={{ textAlign: "center", marginBottom: "64px" }}>
+          <Link href="/" style={{ textDecoration: "none" }}>
+            <span className="type-wordmark" style={{ color: "var(--color-ink)" }}>
+              CAREERSENCE
+            </span>
+          </Link>
         </div>
 
-        <Card padding="lg" className="mx-auto w-full max-w-md">
-          <h1 className="text-xl font-semibold text-[var(--color-text)]">
-            Sign in to your account
+        {/* Form heading */}
+        <div style={{ marginBottom: "48px" }}>
+          <p className="type-caption" style={{ color: "var(--color-muted)", marginBottom: "12px" }}>
+            SIGN IN
+          </p>
+          <h1
+            className="type-display-md"
+            style={{ color: "var(--color-ink)" }}
+          >
+            WELCOME BACK
           </h1>
-          <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-            Enter your credentials to continue.
-          </p>
+        </div>
 
-          {formError && (
-            <div
-              className="mt-4 rounded-lg border border-[var(--color-error)] bg-red-50 p-3 text-sm text-red-800"
-              role="alert"
-            >
-              {formError}
-            </div>
-          )}
+        {/* Error */}
+        {formError && (
+          <div
+            role="alert"
+            style={{
+              marginBottom: "24px",
+              padding: "12px 16px",
+              border: "1px solid var(--color-error)",
+              background: "transparent",
+            }}
+          >
+            <p className="type-caption" style={{ color: "var(--color-error)" }}>
+              {formError.toUpperCase()}
+            </p>
+          </div>
+        )}
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-            <Input
-              label="Email"
-              type="email"
-              autoComplete="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={errors.email}
+        {/* Form */}
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+          <Input
+            label="Email"
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={errors.email}
+          />
+          <Input
+            label="Password"
+            type="password"
+            autoComplete="current-password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={errors.password}
+          />
+
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <Checkbox
+              label="Remember me"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
             />
-            <Input
-              label="Password"
-              type="password"
-              autoComplete="current-password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              error={errors.password}
-            />
-            <div className="flex items-center justify-between">
-              <Checkbox
-                label="Remember me"
-                checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
-              />
-              <Link
-                href="/"
-                className="text-sm font-medium text-[var(--color-primary-600)] hover:underline"
-              >
-                Forgot your password?
-              </Link>
-            </div>
-            <Button
-              type="submit"
-              variant="primary"
-              fullWidth
-              loading={loading}
-              className="mt-4"
-            >
-              Sign in
-            </Button>
-          </form>
-
-          <p className="mt-6 text-center text-sm text-[var(--color-text-muted)]">
-            Don&apos;t have an account?{" "}
             <Link
-              href="/signup"
-              className="font-medium text-[var(--color-primary-600)] hover:underline"
+              href="/"
+              className="type-caption"
+              style={{ color: "var(--color-link)", textDecoration: "none" }}
             >
-              Sign up
+              FORGOT PASSWORD
             </Link>
-          </p>
-        </Card>
+          </div>
+
+          <Button
+            type="submit"
+            variant="primary"
+            fullWidth
+            loading={loading}
+          >
+            SIGN IN
+          </Button>
+        </form>
+
+        {/* Footer link */}
+        <p
+          className="type-body-sm"
+          style={{ marginTop: "40px", textAlign: "center", color: "var(--color-muted)" }}
+        >
+          Don&apos;t have an account?{" "}
+          <Link
+            href="/signup"
+            style={{ color: "var(--color-link)", textDecoration: "none" }}
+          >
+            Sign up
+          </Link>
+        </p>
+
       </div>
     </div>
   );
@@ -155,7 +179,23 @@ function SignInForm() {
 
 export default function SignInPage() {
   return (
-    <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center text-[var(--color-text-muted)]">Loading...</div>}>
+    <Suspense
+      fallback={
+        <div
+          style={{
+            minHeight: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "var(--color-canvas)",
+          }}
+        >
+          <span className="type-caption" style={{ color: "var(--color-muted)" }}>
+            LOADING...
+          </span>
+        </div>
+      }
+    >
       <SignInForm />
     </Suspense>
   );

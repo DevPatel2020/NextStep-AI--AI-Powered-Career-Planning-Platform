@@ -9,16 +9,42 @@ type BadgeVariant =
   | "error"
   | "outline";
 
-const variantClasses: Record<BadgeVariant, string> = {
-  default:
-    "bg-[var(--color-background)] text-[var(--color-text)] border border-[var(--color-border)]",
-  primary: "bg-[var(--color-primary-100)] text-[var(--color-primary-800)]",
-  secondary: "bg-[var(--color-secondary-100)] text-[var(--color-secondary-800)]",
-  success: "bg-emerald-100 text-emerald-800",
-  warning: "bg-amber-100 text-amber-800",
-  error: "bg-red-100 text-red-800",
-  outline:
-    "border border-[var(--color-border)] bg-transparent text-[var(--color-text-muted)]",
+const variantStyles: Record<BadgeVariant, React.CSSProperties> = {
+  default: {
+    background: "transparent",
+    color: "var(--color-muted)",
+    border: "1px solid var(--color-hairline)",
+  },
+  primary: {
+    background: "transparent",
+    color: "var(--color-ink)",
+    border: "1px solid var(--color-hairline-strong)",
+  },
+  secondary: {
+    background: "transparent",
+    color: "var(--color-muted)",
+    border: "1px solid var(--color-hairline)",
+  },
+  success: {
+    background: "transparent",
+    color: "var(--color-success)",
+    border: "1px solid var(--color-success)",
+  },
+  warning: {
+    background: "transparent",
+    color: "var(--color-warning)",
+    border: "1px solid var(--color-warning)",
+  },
+  error: {
+    background: "transparent",
+    color: "var(--color-error)",
+    border: "1px solid var(--color-error)",
+  },
+  outline: {
+    background: "transparent",
+    color: "var(--color-muted)",
+    border: "1px solid var(--color-hairline)",
+  },
 };
 
 interface BadgeProps {
@@ -36,9 +62,14 @@ export function Badge({
 }: BadgeProps) {
   return (
     <span
-      className={`inline-flex items-center font-medium ${variantClasses[variant]} ${
-        size === "sm" ? "rounded px-1.5 py-0.5 text-xs" : "rounded-md px-2.5 py-0.5 text-sm"
-      } ${className}`}
+      className={`type-caption ${className}`}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        borderRadius: "0px",
+        padding: size === "sm" ? "2px 8px" : "4px 10px",
+        ...variantStyles[variant],
+      }}
     >
       {children}
     </span>

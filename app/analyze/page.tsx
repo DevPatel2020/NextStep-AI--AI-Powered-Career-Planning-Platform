@@ -40,37 +40,34 @@ const mockAnalysis = {
 
 const markdownComponents: Components = {
   h1: ({ node, ...props }) => (
-    <h1 className="mt-8 mb-6 bg-gradient-to-r from-[var(--color-primary-600)] to-blue-500 bg-clip-text text-3xl font-extrabold text-transparent" {...props} />
+    <h1 className="mt-16 mb-8 type-display-lg text-[var(--color-ink)]" {...props} />
   ),
   h2: ({ node, ...props }) => (
-    <div className="mt-10 mb-6 flex items-center gap-3 border-b-2 border-[var(--color-primary-200)] pb-2 dark:border-[var(--color-primary-900)]/50">
-      <div className="h-2 w-2 rounded-full bg-[var(--color-primary-500)]" />
-      <h2 className="text-xl font-bold text-[var(--color-text-strong)]" {...props} />
-    </div>
+    <h2 className="mt-12 mb-6 border-b border-[var(--color-hairline-strong)] pb-4 type-display-md text-[var(--color-ink)]" {...props} />
   ),
   h3: ({ node, ...props }) => (
-    <h3 className="mt-6 mb-3 text-lg font-semibold text-[var(--color-text-strong)]" {...props} />
+    <h3 className="mt-8 mb-4 type-title-md text-[var(--color-ink)]" {...props} />
   ),
   p: ({ node, ...props }) => (
-    <p className="mb-5 leading-relaxed text-[var(--color-text-strong)] text-[16px]" {...props} />
+    <p className="mb-6 type-body-md text-[var(--color-body)]" {...props} />
   ),
   ul: ({ node, ...props }) => (
-    <ul className="mb-6 ml-2 space-y-3 list-none" {...props} />
+    <ul className="mb-6 ml-6 space-y-2 list-disc text-[var(--color-body)]" {...props} />
   ),
   ol: ({ node, ...props }) => (
-    <ol className="mb-6 ml-6 list-decimal space-y-3 text-[var(--color-text-strong)] marker:font-semibold marker:text-[var(--color-primary-600)]" {...props} />
+    <ol className="mb-6 ml-6 list-decimal space-y-2 text-[var(--color-body)]" {...props} />
   ),
   li: ({ node, ...props }) => (
-    <li className="relative pl-7 leading-relaxed text-[var(--color-text-strong)] text-[16px] before:absolute before:left-2 before:top-[10px] before:h-1.5 before:w-1.5 before:rounded-full before:bg-[var(--color-primary-500)]" {...props} />
+    <li className="type-body-md text-[var(--color-body)] pl-2" {...props} />
   ),
   strong: ({ node, ...props }) => (
-    <strong className="font-semibold text-[var(--color-text-strong)]" {...props} />
+    <strong className="text-[var(--color-ink)] font-normal" {...props} />
   ),
   blockquote: ({ node, ...props }) => (
-    <blockquote className="my-6 rounded-r-lg border-l-4 border-[var(--color-primary-500)] bg-[var(--color-primary-50)] py-4 pl-5 italic text-[var(--color-text-strong)] dark:bg-[var(--color-primary-900)]/20" {...props} />
+    <blockquote className="my-8 border-l border-[var(--color-hairline-strong)] pl-6 py-2 italic type-body-md text-[var(--color-muted)]" {...props} />
   ),
   hr: ({ node, ...props }) => (
-    <hr className="my-10 border-t border-[var(--color-border)]" {...props} />
+    <hr className="my-12 border-t border-[var(--color-hairline-strong)]" {...props} />
   ),
 };
 
@@ -272,27 +269,26 @@ export default function AnalyzePage() {
               </Button>
             </div>
           </Modal>
-          <Card padding="lg" className="mb-6 relative overflow-hidden group border-[var(--color-primary-200)] dark:border-[var(--color-primary-800)]">
-            <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-primary-500)]/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative z-10">
-              <h3 className="mb-2 text-xl font-bold text-[var(--color-text-strong)] flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--color-primary-500)]"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><path d="M16 13H8" /><path d="M16 17H8" /><path d="M10 9H8" /></svg>
+          <Card padding="lg" className="mb-6 border border-[var(--color-hairline)] bg-[var(--color-surface-card)]">
+            <div>
+              <h3 className="mb-2 type-title-md text-[var(--color-ink)] flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--color-ink)]"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><path d="M16 13H8" /><path d="M16 17H8" /><path d="M10 9H8" /></svg>
                 Upload your resume for AI analysis
               </h3>
-              <p className="mb-6 text-base text-[var(--color-text-strong)]">
+              <p className="mb-6 type-body-md text-[var(--color-body)]">
                 Upload your resume to receive an in-depth ATS compatibility score, strengths, weaknesses, and actionable suggestions.
               </p>
 
               {!parsingFile ? (
                 <div
-                  className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-[var(--color-border)] rounded-xl hover:border-[var(--color-primary-500)] hover:bg-[var(--color-primary-50)] dark:hover:bg-[var(--color-primary-900)]/20 transition-all cursor-pointer"
+                  className="flex flex-col items-center justify-center p-8 border border-dashed border-[var(--color-hairline-strong)] hover:border-[var(--color-ink)] transition-colors cursor-pointer"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-[var(--color-text-strong)] mb-3 group-hover:text-[var(--color-primary-500)] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-[var(--color-muted)] mb-4 hover:text-[var(--color-ink)] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                   </svg>
-                  <p className="font-medium text-[var(--color-text-strong)]">Click to browse or drag and drop</p>
-                  <p className="text-sm text-[var(--color-text-strong)] mt-1">Supports .pdf, .docx, .txt (Max 5MB)</p>
+                  <p className="type-body-md text-[var(--color-ink)]">Click to browse or drag and drop</p>
+                  <p className="type-caption text-[var(--color-muted)] mt-2">Supports .pdf, .docx, .txt (Max 5MB)</p>
                   <input
                     type="file"
                     ref={fileInputRef}
@@ -302,16 +298,16 @@ export default function AnalyzePage() {
                   />
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center p-8 border-2 border-[var(--color-primary-200)] dark:border-[var(--color-primary-800)] bg-[var(--color-primary-50)] dark:bg-[var(--color-primary-900)]/20 rounded-xl">
+                <div className="flex flex-col items-center justify-center p-8 border border-[var(--color-hairline-strong)] bg-transparent">
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-[var(--color-primary-500)] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                    <div className="w-3 h-3 bg-[var(--color-primary-500)] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                    <div className="w-3 h-3 bg-[var(--color-primary-500)] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                    <div className="w-2 h-2 bg-[var(--color-ink)] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <div className="w-2 h-2 bg-[var(--color-ink)] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <div className="w-2 h-2 bg-[var(--color-ink)] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                   </div>
-                  <p className="mt-4 font-medium text-[var(--color-text-strong)] animate-pulse">
+                  <p className="mt-6 type-body-md text-[var(--color-ink)] animate-pulse">
                     Analyzing Resume with AI...
                   </p>
-                  <p className="text-sm text-[var(--color-text-strong)] mt-1">This might take a few seconds.</p>
+                  <p className="type-caption text-[var(--color-muted)] mt-2">This might take a few seconds.</p>
                 </div>
               )}
             </div>
@@ -324,18 +320,17 @@ export default function AnalyzePage() {
               className="space-y-6"
             >
               {/* Graphical Dashboard */}
-              <Card padding="lg" className="bg-white dark:bg-[var(--color-card)] shadow-lg border border-[var(--color-border)]">
+              <Card padding="lg" className="border border-[var(--color-hairline)] bg-[var(--color-surface-card)]">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-8">
                   {/* Overall ATS Score Radial Circle */}
-                  <div className="flex-1 flex justify-center md:border-r border-[var(--color-border)] md:pr-8 relative">
-                    <div className="absolute -inset-4 bg-gradient-to-tr from-[var(--color-primary-500)]/10 to-transparent blur-2xl rounded-full" />
+                  <div className="flex-1 flex justify-center md:border-r border-[var(--color-hairline)] md:pr-8 relative">
                     <AnimatedScoreCircle score={resumeAnalysisData.overallScore} label="ATS Match Score" />
                   </div>
 
                   {/* Sub-Metric Horizontal Bars */}
                   <div className="flex-[2] w-full pt-4 md:pt-0">
-                    <h4 className="text-xl font-extrabold text-[var(--color-text-strong)] mb-6 flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--color-primary-500)]"><path d="M12 20v-6M6 20V10M18 20V4" /></svg>
+                    <h4 className="type-title-md text-[var(--color-ink)] mb-6 flex items-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--color-ink)]"><path d="M12 20v-6M6 20V10M18 20V4" /></svg>
                       Detailed Metric Checks
                     </h4>
                     <AnimatedProgressBar label="Impact & Measurable Results" score={resumeAnalysisData.subScores.impact} />
@@ -346,10 +341,10 @@ export default function AnalyzePage() {
               </Card>
 
               {/* Detailed Markdown Report */}
-              <Card padding="lg" className="overflow-hidden bg-white dark:bg-[var(--color-card)] shadow-lg border border-[var(--color-border)]">
-                <div className="mb-8 flex flex-col items-center border-b-2 border-[var(--color-primary-100)] dark:border-[var(--color-primary-900)] pb-6 sm:flex-row sm:justify-between">
-                  <h3 className="text-3xl font-extrabold text-[var(--color-text-strong)] flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--color-primary-500)]"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
+              <Card padding="lg" className="border border-[var(--color-hairline)] bg-[var(--color-surface-card)]">
+                <div className="mb-8 flex flex-col items-center border-b border-[var(--color-hairline-strong)] pb-6 sm:flex-row sm:justify-between">
+                  <h3 className="type-display-md text-[var(--color-ink)] flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--color-ink)]"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
                     In-Depth Analysis Report
                   </h3>
                 </div>
@@ -385,29 +380,29 @@ export default function AnalyzePage() {
               </Button>
             </div>
           </Modal>
-          <Card padding="lg" className="mb-6">
-            <h3 className="mb-2 font-semibold text-[var(--color-text-strong)]">
+          <Card padding="lg" className="mb-6 border border-[var(--color-hairline)] bg-[var(--color-surface-card)]">
+            <h3 className="mb-6 type-display-sm text-[var(--color-ink)]">
               Compare two career paths
             </h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-1 block text-sm font-medium">Career A</label>
+                <label className="mb-2 block type-caption text-[var(--color-muted)]">Career A</label>
                 <input
                   type="text"
                   placeholder="e.g. Software Engineering"
                   value={careerA}
                   onChange={(e) => setCareerA(e.target.value)}
-                  className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2"
+                  className="w-full bg-transparent border-b border-[var(--color-hairline-strong)] px-0 py-2 type-body-md text-[var(--color-ink)] focus:outline-none focus:border-[var(--color-ink)] transition-colors placeholder:text-[var(--color-muted-soft)]"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">Career B</label>
+                <label className="mb-2 block type-caption text-[var(--color-muted)]">Career B</label>
                 <input
                   type="text"
                   placeholder="e.g. Data Analytics"
                   value={careerB}
                   onChange={(e) => setCareerB(e.target.value)}
-                  className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2"
+                  className="w-full bg-transparent border-b border-[var(--color-hairline-strong)] px-0 py-2 type-body-md text-[var(--color-ink)] focus:outline-none focus:border-[var(--color-ink)] transition-colors placeholder:text-[var(--color-muted-soft)]"
                 />
               </div>
             </div>
@@ -427,76 +422,76 @@ export default function AnalyzePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <Card padding="lg">
-                <h3 className="mb-6 text-2xl font-bold text-[var(--color-text-strong)] text-center">
+              <Card padding="lg" className="border border-[var(--color-hairline)] bg-[var(--color-surface-card)]">
+                <h3 className="mb-6 type-display-md text-[var(--color-ink)] text-center">
                   {careerComparison[0]?.career_name} vs {careerComparison[1]?.career_name}
                 </h3>
 
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left">
+                  <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="border-b-2 border-[var(--color-primary-500)]">
-                        <th className="py-4 px-4 font-semibold text-[var(--color-text-strong)] w-1/4">Criteria</th>
-                        <th className="py-4 px-4 font-semibold text-[var(--color-text-strong)] w-3/8">
+                      <tr className="border-b border-[var(--color-hairline-strong)]">
+                        <th className="py-6 px-4 type-caption text-[var(--color-muted)] w-1/4">Criteria</th>
+                        <th className="py-6 px-4 type-caption text-[var(--color-ink)] w-3/8">
                           {careerComparison[0]?.career_name}
                         </th>
-                        <th className="py-4 px-4 font-semibold text-[var(--color-text-strong)] w-3/8">
+                        <th className="py-6 px-4 type-caption text-[var(--color-ink)] w-3/8">
                           {careerComparison[1]?.career_name}
                         </th>
                       </tr>
                     </thead>
                     <tbody>
                       {/* Description */}
-                      <tr className="border-b border-[var(--color-border)]">
-                        <td className="py-4 px-4 font-medium text-[var(--color-text-strong)]">Description</td>
-                        <td className="py-4 px-4 text-sm text-[var(--color-text-strong)]">
+                      <tr className="border-b border-[var(--color-hairline)]">
+                        <td className="py-6 px-4 type-title-sm text-[var(--color-ink)]">Description</td>
+                        <td className="py-6 px-4 type-body-md text-[var(--color-body)]">
                           {careerComparison[0]?.description}
                         </td>
-                        <td className="py-4 px-4 text-sm text-[var(--color-text-strong)]">
+                        <td className="py-6 px-4 type-body-md text-[var(--color-body)]">
                           {careerComparison[1]?.description}
                         </td>
                       </tr>
 
                       {/* Salary */}
-                      <tr className="border-b border-[var(--color-border)]">
-                        <td className="py-4 px-4 font-medium text-[var(--color-text-strong)]">Average Salary (India)</td>
-                        <td className="py-4 px-4">
-                          <span className="text-lg font-bold text-[var(--color-text-strong)]">
+                      <tr className="border-b border-[var(--color-hairline)]">
+                        <td className="py-6 px-4 type-title-sm text-[var(--color-ink)]">Average Salary (India)</td>
+                        <td className="py-6 px-4">
+                          <span className="type-display-sm text-[var(--color-ink)]">
                             {careerComparison[0]?.average_salary_india}
                           </span>
                         </td>
-                        <td className="py-4 px-4">
-                          <span className="text-lg font-bold text-[var(--color-text-strong)]">
+                        <td className="py-6 px-4">
+                          <span className="type-display-sm text-[var(--color-ink)]">
                             {careerComparison[1]?.average_salary_india}
                           </span>
                         </td>
                       </tr>
 
                       {/* Job Demand */}
-                      <tr className="border-b border-[var(--color-border)]">
-                        <td className="py-4 px-4 font-medium text-[var(--color-text-strong)]">Job Demand Score</td>
-                        <td className="py-4 px-4">
-                          <div className="flex items-center gap-3">
-                            <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <tr className="border-b border-[var(--color-hairline)]">
+                        <td className="py-6 px-4 type-title-sm text-[var(--color-ink)]">Job Demand Score</td>
+                        <td className="py-6 px-4">
+                          <div className="flex items-center gap-4">
+                            <div className="flex-1 h-1 bg-[var(--color-surface-elevated)] rounded-none overflow-hidden">
                               <div
-                                className="h-full bg-[var(--color-primary-500)] rounded-full"
+                                className="h-full bg-[var(--color-ink)]"
                                 style={{ width: `${careerComparison[0]?.job_demand_score}%` }}
                               />
                             </div>
-                            <span className="text-sm font-semibold text-[var(--color-text-strong)]">
+                            <span className="type-caption text-[var(--color-ink)]">
                               {careerComparison[0]?.job_demand_score}/100
                             </span>
                           </div>
                         </td>
-                        <td className="py-4 px-4">
-                          <div className="flex items-center gap-3">
-                            <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <td className="py-6 px-4">
+                          <div className="flex items-center gap-4">
+                            <div className="flex-1 h-1 bg-[var(--color-surface-elevated)] rounded-none overflow-hidden">
                               <div
-                                className="h-full bg-blue-500 rounded-full"
+                                className="h-full bg-[var(--color-muted)]"
                                 style={{ width: `${careerComparison[1]?.job_demand_score}%` }}
                               />
                             </div>
-                            <span className="text-sm font-semibold text-[var(--color-text-strong)]">
+                            <span className="type-caption text-[var(--color-muted)]">
                               {careerComparison[1]?.job_demand_score}/100
                             </span>
                           </div>
@@ -504,85 +499,85 @@ export default function AnalyzePage() {
                       </tr>
 
                       {/* Work-Life Balance */}
-                      <tr className="border-b border-[var(--color-border)]">
-                        <td className="py-4 px-4 font-medium text-[var(--color-text-strong)]">Work-Life Balance</td>
-                        <td className="py-4 px-4">
-                          <span className="text-lg">{"⭐".repeat(careerComparison[0]?.work_life_balance)}</span>
+                      <tr className="border-b border-[var(--color-hairline)]">
+                        <td className="py-6 px-4 type-title-sm text-[var(--color-ink)]">Work-Life Balance</td>
+                        <td className="py-6 px-4">
+                          <span className="type-body-md text-[var(--color-ink)]">{"⭐".repeat(careerComparison[0]?.work_life_balance)}</span>
                         </td>
-                        <td className="py-4 px-4">
-                          <span className="text-lg">{"⭐".repeat(careerComparison[1]?.work_life_balance)}</span>
+                        <td className="py-6 px-4">
+                          <span className="type-body-md text-[var(--color-ink)]">{"⭐".repeat(careerComparison[1]?.work_life_balance)}</span>
                         </td>
                       </tr>
 
                       {/* Difficulty */}
-                      <tr className="border-b border-[var(--color-border)]">
-                        <td className="py-4 px-4 font-medium text-[var(--color-text-strong)]">Difficulty to Enter</td>
-                        <td className="py-4 px-4">
-                          <span className={`text-xs font-semibold px-3 py-1 rounded ${careerComparison[0]?.difficulty_to_enter === 'Low' ? 'bg-green-100 text-[var(--color-text-strong)] dark:bg-green-900/30' :
-                            careerComparison[0]?.difficulty_to_enter === 'High' ? 'bg-red-100 text-[var(--color-text-strong)] dark:bg-red-900/30' :
-                              'bg-yellow-100 text-[var(--color-text-strong)] dark:bg-yellow-900/30'
+                      <tr className="border-b border-[var(--color-hairline)]">
+                        <td className="py-6 px-4 type-title-sm text-[var(--color-ink)]">Difficulty to Enter</td>
+                        <td className="py-6 px-4">
+                          <span className={`type-caption uppercase ${careerComparison[0]?.difficulty_to_enter === 'Low' ? 'text-[var(--color-success)]' :
+                            careerComparison[0]?.difficulty_to_enter === 'High' ? 'text-[var(--color-warning)]' :
+                              'text-[var(--color-body)]'
                             }`}>{careerComparison[0]?.difficulty_to_enter}</span>
                         </td>
-                        <td className="py-4 px-4">
-                          <span className={`text-xs font-semibold px-3 py-1 rounded ${careerComparison[1]?.difficulty_to_enter === 'Low' ? 'bg-green-100 text-[var(--color-text-strong)] dark:bg-green-900/30' :
-                            careerComparison[1]?.difficulty_to_enter === 'High' ? 'bg-red-100 text-[var(--color-text-strong)] dark:bg-red-900/30' :
-                              'bg-yellow-100 text-[var(--color-text-strong)] dark:bg-yellow-900/30'
+                        <td className="py-6 px-4">
+                          <span className={`type-caption uppercase ${careerComparison[1]?.difficulty_to_enter === 'Low' ? 'text-[var(--color-success)]' :
+                            careerComparison[1]?.difficulty_to_enter === 'High' ? 'text-[var(--color-warning)]' :
+                              'text-[var(--color-body)]'
                             }`}>{careerComparison[1]?.difficulty_to_enter}</span>
                         </td>
                       </tr>
 
                       {/* Automation Risk */}
-                      <tr className="border-b border-[var(--color-border)]">
-                        <td className="py-4 px-4 font-medium text-[var(--color-text-strong)]">Automation Risk</td>
-                        <td className="py-4 px-4">
-                          <span className={`text-xs font-semibold px-3 py-1 rounded ${careerComparison[0]?.automation_risk === 'Low' ? 'bg-green-100 text-[var(--color-text-strong)] dark:bg-green-900/30' :
-                            careerComparison[0]?.automation_risk === 'High' ? 'bg-red-100 text-[var(--color-text-strong)] dark:bg-red-900/30' :
-                              'bg-yellow-100 text-[var(--color-text-strong)] dark:bg-yellow-900/30'
+                      <tr className="border-b border-[var(--color-hairline)]">
+                        <td className="py-6 px-4 type-title-sm text-[var(--color-ink)]">Automation Risk</td>
+                        <td className="py-6 px-4">
+                          <span className={`type-caption uppercase ${careerComparison[0]?.automation_risk === 'Low' ? 'text-[var(--color-success)]' :
+                            careerComparison[0]?.automation_risk === 'High' ? 'text-[var(--color-warning)]' :
+                              'text-[var(--color-body)]'
                             }`}>{careerComparison[0]?.automation_risk}</span>
                         </td>
-                        <td className="py-4 px-4">
-                          <span className={`text-xs font-semibold px-3 py-1 rounded ${careerComparison[1]?.automation_risk === 'Low' ? 'bg-green-100 text-[var(--color-text-strong)] dark:bg-green-900/30' :
-                            careerComparison[1]?.automation_risk === 'High' ? 'bg-red-100 text-[var(--color-text-strong)] dark:bg-red-900/30' :
-                              'bg-yellow-100 text-[var(--color-text-strong)] dark:bg-yellow-900/30'
+                        <td className="py-6 px-4">
+                          <span className={`type-caption uppercase ${careerComparison[1]?.automation_risk === 'Low' ? 'text-[var(--color-success)]' :
+                            careerComparison[1]?.automation_risk === 'High' ? 'text-[var(--color-warning)]' :
+                              'text-[var(--color-body)]'
                             }`}>{careerComparison[1]?.automation_risk}</span>
                         </td>
                       </tr>
 
                       {/* Remote Work */}
-                      <tr className="border-b border-[var(--color-border)]">
-                        <td className="py-4 px-4 font-medium text-[var(--color-text-strong)]">Remote Work</td>
-                        <td className="py-4 px-4">
-                          <span className={`text-xs font-semibold px-3 py-1 rounded-full ${careerComparison[0]?.remote_work_possibility === 'Yes'
-                            ? 'bg-green-100 text-[var(--color-text-strong)] dark:bg-green-900/30'
-                            : 'bg-gray-100 text-[var(--color-text-strong)] dark:bg-gray-800'
+                      <tr className="border-b border-[var(--color-hairline)]">
+                        <td className="py-6 px-4 type-title-sm text-[var(--color-ink)]">Remote Work</td>
+                        <td className="py-6 px-4">
+                          <span className={`type-caption uppercase ${careerComparison[0]?.remote_work_possibility === 'Yes'
+                            ? 'text-[var(--color-success)]'
+                            : 'text-[var(--color-body)]'
                             }`}>{careerComparison[0]?.remote_work_possibility}</span>
                         </td>
-                        <td className="py-4 px-4">
-                          <span className={`text-xs font-semibold px-3 py-1 rounded-full ${careerComparison[1]?.remote_work_possibility === 'Yes'
-                            ? 'bg-green-100 text-[var(--color-text-strong)] dark:bg-green-900/30'
-                            : 'bg-gray-100 text-[var(--color-text-strong)] dark:bg-gray-800'
+                        <td className="py-6 px-4">
+                          <span className={`type-caption uppercase ${careerComparison[1]?.remote_work_possibility === 'Yes'
+                            ? 'text-[var(--color-success)]'
+                            : 'text-[var(--color-body)]'
                             }`}>{careerComparison[1]?.remote_work_possibility}</span>
                         </td>
                       </tr>
 
                       {/* Education */}
-                      <tr className="border-b border-[var(--color-border)]">
-                        <td className="py-4 px-4 font-medium text-[var(--color-text-strong)]">Required Education</td>
-                        <td className="py-4 px-4">
+                      <tr className="border-b border-[var(--color-hairline)]">
+                        <td className="py-6 px-4 type-title-sm text-[var(--color-ink)]">Required Education</td>
+                        <td className="py-6 px-4">
                           <ul className="space-y-1">
                             {careerComparison[0]?.required_education.map((edu, i) => (
-                              <li key={i} className="text-sm text-[var(--color-text-strong)] flex items-start gap-2">
-                                <span className="text-[var(--color-primary-500)]">•</span>
+                              <li key={i} className="type-body-md text-[var(--color-body)] flex items-start gap-2">
+                                <span className="text-[var(--color-muted)]">•</span>
                                 {edu}
                               </li>
                             ))}
                           </ul>
                         </td>
-                        <td className="py-4 px-4">
+                        <td className="py-6 px-4">
                           <ul className="space-y-1">
                             {careerComparison[1]?.required_education.map((edu, i) => (
-                              <li key={i} className="text-sm text-[var(--color-text-strong)] flex items-start gap-2">
-                                <span className="text-blue-500">•</span>
+                              <li key={i} className="type-body-md text-[var(--color-body)] flex items-start gap-2">
+                                <span className="text-[var(--color-muted)]">•</span>
                                 {edu}
                               </li>
                             ))}
@@ -591,21 +586,21 @@ export default function AnalyzePage() {
                       </tr>
 
                       {/* Skills */}
-                      <tr className="border-b border-[var(--color-border)]">
-                        <td className="py-4 px-4 font-medium text-[var(--color-text-strong)]">Key Skills</td>
-                        <td className="py-4 px-4">
-                          <div className="flex flex-wrap gap-2">
+                      <tr className="border-b border-[var(--color-hairline)]">
+                        <td className="py-6 px-4 type-title-sm text-[var(--color-ink)]">Key Skills</td>
+                        <td className="py-6 px-4">
+                          <div className="flex flex-wrap gap-x-4 gap-y-2">
                             {careerComparison[0]?.key_skills.map((skill, i) => (
-                              <span key={i} className="text-xs px-2 py-1 bg-[var(--color-primary-100)] dark:bg-[var(--color-primary-900)]/30 text-[var(--color-text-strong)] rounded font-medium">
+                              <span key={i} className="type-caption text-[var(--color-ink)]">
                                 {skill}
                               </span>
                             ))}
                           </div>
                         </td>
-                        <td className="py-4 px-4">
-                          <div className="flex flex-wrap gap-2">
+                        <td className="py-6 px-4">
+                          <div className="flex flex-wrap gap-x-4 gap-y-2">
                             {careerComparison[1]?.key_skills.map((skill, i) => (
-                              <span key={i} className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-[var(--color-text-strong)] rounded font-medium">
+                              <span key={i} className="type-caption text-[var(--color-ink)]">
                                 {skill}
                               </span>
                             ))}
@@ -614,23 +609,21 @@ export default function AnalyzePage() {
                       </tr>
 
                       {/* Career Growth */}
-                      <tr className="border-b border-[var(--color-border)]">
-                        <td className="py-4 px-4 font-medium text-[var(--color-text-strong)]">Career Growth Path</td>
-                        <td className="py-4 px-4">
-                          <ol className="space-y-1.5">
+                      <tr className="border-b border-[var(--color-hairline)]">
+                        <td className="py-6 px-4 type-title-sm text-[var(--color-ink)]">Career Growth Path</td>
+                        <td className="py-6 px-4">
+                          <ol className="space-y-2 list-decimal ml-4 type-body-md text-[var(--color-body)]">
                             {careerComparison[0]?.career_growth_path.map((step, i) => (
-                              <li key={i} className="text-sm text-[var(--color-text-strong)] flex items-start gap-2">
-                                <span className="font-semibold text-[var(--color-text-strong)]">{i + 1}.</span>
+                              <li key={i} className="pl-2">
                                 {step}
                               </li>
                             ))}
                           </ol>
                         </td>
-                        <td className="py-4 px-4">
-                          <ol className="space-y-1.5">
+                        <td className="py-6 px-4">
+                          <ol className="space-y-2 list-decimal ml-4 type-body-md text-[var(--color-body)]">
                             {careerComparison[1]?.career_growth_path.map((step, i) => (
-                              <li key={i} className="text-sm text-[var(--color-text-strong)] flex items-start gap-2">
-                                <span className="font-semibold text-[var(--color-text-strong)]">{i + 1}.</span>
+                              <li key={i} className="pl-2">
                                 {step}
                               </li>
                             ))}
@@ -640,20 +633,20 @@ export default function AnalyzePage() {
 
                       {/* Industries */}
                       <tr>
-                        <td className="py-4 px-4 font-medium text-[var(--color-text-strong)]">Top Industries</td>
-                        <td className="py-4 px-4">
-                          <div className="flex flex-wrap gap-2">
+                        <td className="py-6 px-4 type-title-sm text-[var(--color-ink)]">Top Industries</td>
+                        <td className="py-6 px-4">
+                          <div className="flex flex-wrap gap-x-4 gap-y-2">
                             {careerComparison[0]?.top_industries.map((industry, i) => (
-                              <span key={i} className="text-xs px-2 py-1 bg-[var(--color-primary-200)] dark:bg-[var(--color-primary-800)] text-[var(--color-text-strong)] rounded font-medium">
+                              <span key={i} className="type-caption text-[var(--color-ink)]">
                                 {industry}
                               </span>
                             ))}
                           </div>
                         </td>
-                        <td className="py-4 px-4">
-                          <div className="flex flex-wrap gap-2">
+                        <td className="py-6 px-4">
+                          <div className="flex flex-wrap gap-x-4 gap-y-2">
                             {careerComparison[1]?.top_industries.map((industry, i) => (
-                              <span key={i} className="text-xs px-2 py-1 bg-blue-200 dark:bg-blue-800 text-[var(--color-text-strong)] rounded font-medium">
+                              <span key={i} className="type-caption text-[var(--color-ink)]">
                                 {industry}
                               </span>
                             ))}

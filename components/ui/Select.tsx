@@ -1,4 +1,4 @@
-import { SelectHTMLAttributes, forwardRef, useId, ReactNode } from "react";
+import { SelectHTMLAttributes, forwardRef, useId } from "react";
 
 interface SelectOption {
   value: string;
@@ -14,55 +14,108 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, error, helperText, options, placeholder, id, className = "", ...props }, ref) => {
+  ({ label, error, helperText, options, placeholder, id, className = "", style: externalStyle, ...props }, ref) => {
     const generatedId = useId();
     const inputId = id || `select-${generatedId.replace(/:/g, "")}`;
 
     return (
-      <div className="w-full">
+      <div style={{ width: "100%" }}>
         {label && (
           <label
             htmlFor={inputId}
-            className="mb-1.5 block text-sm font-medium text-[var(--color-text)]"
+            className="type-caption"
+            style={{
+              display: "block",
+              marginBottom: "10px",
+              color: error ? "var(--color-error)" : "var(--color-muted)",
+            }}
           >
-            {label}
+            {label.toUpperCase()}
           </label>
         )}
-        <div className="relative">
+        <div style={{ position: "relative" }}>
           <select
             ref={ref}
             id={inputId}
             aria-invalid={!!error}
-            className={`block appearance-none w-full rounded-lg border bg-transparent py-2.5 pl-3 pr-10 text-[var(--color-text)] focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-500)]/20 disabled:cursor-not-allowed disabled:opacity-60 ${error
-              ? "border-[var(--color-error)]"
-              : "border-[var(--color-border)]"
-              } ${className}`}
+            className={className}
+            style={{
+              display: "block",
+              appearance: "none",
+              width: "100%",
+              background: "transparent",
+              color: "var(--color-ink)",
+              border: "none",
+              borderBottom: `1px solid ${error ? "var(--color-error)" : "var(--color-hairline-strong)"}`,
+              borderRadius: "0",
+              padding: "12px 32px 12px 0",
+              height: "44px",
+              fontFamily: "var(--font-body)",
+              fontSize: "16px",
+              outline: "none",
+              cursor: "pointer",
+              colorScheme: "dark",
+              ...externalStyle,
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderBottomColor = "var(--color-ink)";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderBottomColor = error
+                ? "var(--color-error)"
+                : "var(--color-hairline-strong)";
+            }}
             {...props}
           >
             {placeholder && (
-              <option value="" disabled className="bg-[var(--color-surface)] text-[var(--color-text-muted)]">
+              <option value="" disabled style={{ background: "var(--color-surface-card)", color: "var(--color-muted)" }}>
                 {placeholder}
               </option>
             )}
             {options.map((opt) => (
-              <option key={opt.value} value={opt.value} className="bg-[var(--color-surface)] text-[var(--color-text)]">
+              <option
+                key={opt.value}
+                value={opt.value}
+                style={{ background: "var(--color-surface-card)", color: "var(--color-ink)" }}
+              >
                 {opt.label}
               </option>
             ))}
           </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-[var(--color-text-muted)]">
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+          {/* Arrow */}
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              right: "4px",
+              bottom: 0,
+              display: "flex",
+              alignItems: "center",
+              pointerEvents: "none",
+              color: "var(--color-muted)",
+            }}
+          >
+            <svg width="10" height="6" fill="none" viewBox="0 0 10 6">
+              <path stroke="currentColor" strokeWidth="1" d="M1 1l4 4 4-4" />
             </svg>
           </div>
         </div>
         {error && (
-          <p className="mt-1.5 text-sm text-[var(--color-error)]" role="alert">
+          <p
+            className="type-caption"
+            role="alert"
+            style={{ marginTop: "8px", color: "var(--color-error)" }}
+          >
             {error}
           </p>
         )}
         {helperText && !error && (
-          <p className="mt-1.5 text-sm text-[var(--color-text-muted)]">{helperText}</p>
+          <p
+            className="type-body-sm"
+            style={{ marginTop: "8px", color: "var(--color-muted)" }}
+          >
+            {helperText}
+          </p>
         )}
       </div>
     );

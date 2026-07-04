@@ -146,25 +146,27 @@ export default async function OverviewPage() {
       description="Here's where you stand and what to do next."
       maxWidth="xl"
     >
-      <div className="space-y-8">
-        {/* Job Hunting - full width rectangle */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "48px" }}>
+        
+        {/* Job Hunting */}
         <FadeInContent delay={0.1}>
-          <Card padding="md" className="w-full" hoverable>
-            <div className="flex flex-wrap items-center justify-between gap-4">
+          <Card padding="md" hoverable>
+            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "24px" }}>
               <div>
-                <h3 className="text-lg font-semibold text-[var(--color-text)]">Job hunting</h3>
-                <p className="text-sm text-[var(--color-text-muted)]">Saved roles and applications.</p>
-                <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm text-[var(--color-text-muted)]">
-                  <span>Saved: <strong>{totalSavedJobs}</strong></span>
-                  <span>Applied: <strong>{appliedJobs}</strong></span>
-                  <span>Interviewing: <strong>{interviewingJobs}</strong></span>
+                <h3 className="type-title-md" style={{ color: "var(--color-ink)", margin: 0 }}>JOB HUNTING</h3>
+                <p className="type-body-sm" style={{ color: "var(--color-muted)", margin: "4px 0 12px" }}>Saved roles and applications.</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "24px" }}>
+                  <span className="type-body-sm" style={{ color: "var(--color-muted)" }}>SAVED: <strong style={{ color: "var(--color-ink)", fontWeight: 400, fontFamily: "var(--font-mono)" }}>{totalSavedJobs}</strong></span>
+                  <span className="type-body-sm" style={{ color: "var(--color-muted)" }}>APPLIED: <strong style={{ color: "var(--color-ink)", fontWeight: 400, fontFamily: "var(--font-mono)" }}>{appliedJobs}</strong></span>
+                  <span className="type-body-sm" style={{ color: "var(--color-muted)" }}>INTERVIEWING: <strong style={{ color: "var(--color-ink)", fontWeight: 400, fontFamily: "var(--font-mono)" }}>{interviewingJobs}</strong></span>
                 </div>
               </div>
               <Link
                 href="/job-hunting"
-                className="inline-flex items-center justify-center rounded-lg bg-[var(--color-primary-600)] px-5 py-2.5 text-sm font-medium text-white hover:bg-[var(--color-primary-700)]"
+                className="btn-bugatti"
+                style={{ height: "40px", padding: "0 24px", fontSize: "11px", textDecoration: "none" }}
               >
-                Manage jobs
+                MANAGE JOBS
               </Link>
             </div>
           </Card>
@@ -172,16 +174,17 @@ export default async function OverviewPage() {
 
         {/* Learning Resources */}
         <FadeInContent delay={0.15}>
-          <section className="space-y-4">
+          <section style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             <CardHeader
-              title="Learning Resources"
+              title="LEARNING RESOURCES"
               description="Your saved courses, videos, and reading materials."
               action={
                 <Link
                   href="/learning-resources"
-                  className="inline-flex items-center justify-center rounded-lg bg-[var(--color-primary-600)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--color-primary-700)]"
+                  className="btn-bugatti"
+                  style={{ height: "36px", padding: "0 20px", fontSize: "11px", textDecoration: "none" }}
                 >
-                  + Find more
+                  FIND MORE →
                 </Link>
               }
             />
@@ -196,16 +199,17 @@ export default async function OverviewPage() {
 
         {/* Career Trees */}
         <FadeInContent delay={0.2}>
-          <section className="space-y-4">
+          <section style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             <CardHeader
-              title="Career Trees"
+              title="CAREER TREES"
               description="Your AI-generated career path visualizations."
               action={
                 <Link
                   href="/career-tree"
-                  className="inline-flex items-center justify-center rounded-lg bg-[var(--color-primary-600)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--color-primary-700)]"
+                  className="btn-bugatti"
+                  style={{ height: "36px", padding: "0 20px", fontSize: "11px", textDecoration: "none" }}
                 >
-                  + Generate new
+                  GENERATE NEW →
                 </Link>
               }
             />
@@ -215,16 +219,17 @@ export default async function OverviewPage() {
 
         {/* Previous AI Roadmaps */}
         <FadeInContent delay={0.3}>
-          <section className="space-y-4">
+          <section style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             <CardHeader
-              title="Previous Roadmaps"
+              title="PREVIOUS ROADMAPS"
               description="Your AI-generated roadmaps, saved for reference."
               action={
                 <Link
                   href="/ai-roadmap"
-                  className="inline-flex items-center justify-center rounded-lg bg-[var(--color-primary-600)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--color-primary-700)]"
+                  className="btn-bugatti"
+                  style={{ height: "36px", padding: "0 20px", fontSize: "11px", textDecoration: "none" }}
                 >
-                  + Generate new
+                  GENERATE NEW →
                 </Link>
               }
             />
@@ -234,23 +239,23 @@ export default async function OverviewPage() {
 
         {/* Career Quiz History */}
         <FadeInContent delay={0.4}>
-          <section className="space-y-4">
+          <section style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             <CardHeader
-              title="Career Quiz History"
+              title="CAREER QUIZ HISTORY"
               description="Your AI-powered career assessment results."
               action={
                 <Link
                   href="/career-quiz"
-                  className="inline-flex items-center justify-center rounded-lg bg-[var(--color-primary-600)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--color-primary-700)]"
+                  className="btn-bugatti"
+                  style={{ height: "36px", padding: "0 20px", fontSize: "11px", textDecoration: "none" }}
                 >
-                  + Take quiz
+                  TAKE QUIZ →
                 </Link>
               }
             />
             <QuizHistorySection quizzes={quizSessions} />
           </section>
         </FadeInContent>
-
 
       </div>
     </PageShell>

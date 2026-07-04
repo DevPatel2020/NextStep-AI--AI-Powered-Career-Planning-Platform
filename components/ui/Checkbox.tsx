@@ -12,28 +12,53 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     const inputId = id || `checkbox-${generatedId.replace(/:/g, "")}`;
 
     return (
-      <div className="w-full">
-        <div className="flex items-start gap-3">
+      <div style={{ width: "100%" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
           <input
             ref={ref}
             type="checkbox"
             id={inputId}
             aria-invalid={!!error}
-            className="mt-1 h-4 w-4 rounded border-[var(--color-border)] text-[var(--color-primary-600)] focus:ring-2 focus:ring-[var(--color-primary-500)]/20"
+            className={className}
+            style={{
+              marginTop: "2px",
+              width: "14px",
+              height: "14px",
+              flexShrink: 0,
+              accentColor: "var(--color-ink)",
+              cursor: "pointer",
+              borderRadius: "0",
+              border: "1px solid var(--color-hairline-strong)",
+              background: "transparent",
+              colorScheme: "dark",
+            }}
             {...props}
           />
-          <div className="flex-1">
+          <div style={{ flex: 1 }}>
             <label
               htmlFor={inputId}
-              className="cursor-pointer text-sm font-medium text-[var(--color-text)]"
+              className="type-body-sm"
+              style={{
+                cursor: "pointer",
+                color: "var(--color-body)",
+              }}
             >
               {label}
             </label>
             {helperText && !error && (
-              <p className="mt-0.5 text-sm text-[var(--color-text-muted)]">{helperText}</p>
+              <p
+                className="type-body-sm"
+                style={{ marginTop: "4px", color: "var(--color-muted)" }}
+              >
+                {helperText}
+              </p>
             )}
             {error && (
-              <p className="mt-0.5 text-sm text-[var(--color-error)]" role="alert">
+              <p
+                className="type-caption"
+                role="alert"
+                style={{ marginTop: "4px", color: "var(--color-error)" }}
+              >
                 {error}
               </p>
             )}

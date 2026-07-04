@@ -17,18 +17,35 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const inputId = id || `input-${generatedId.replace(/:/g, "")}`;
 
     return (
-      <div className="w-full">
+      <div style={{ width: "100%" }}>
         {label && (
           <label
             htmlFor={inputId}
-            className="mb-1.5 block text-sm font-medium text-[var(--color-text)]"
+            className="type-caption"
+            style={{
+              display: "block",
+              marginBottom: "10px",
+              color: error ? "var(--color-error)" : "var(--color-muted)",
+            }}
           >
             {label}
           </label>
         )}
-        <div className="relative">
+        <div style={{ position: "relative" }}>
           {leftAddon && (
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[var(--color-text-muted)]">
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                bottom: 0,
+                left: 0,
+                display: "flex",
+                alignItems: "center",
+                paddingLeft: "0",
+                pointerEvents: "none",
+                color: "var(--color-muted)",
+              }}
+            >
               {leftAddon}
             </div>
           )}
@@ -39,32 +56,72 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             aria-describedby={
               error ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined
             }
+            className={className}
             style={{
+              display: "block",
+              width: "100%",
+              background: "transparent",
+              color: "var(--color-ink)",
+              border: "none",
+              borderBottom: `1px solid ${error ? "var(--color-error)" : "var(--color-hairline-strong)"}`,
+              borderRadius: "0",
+              padding: "12px 0",
+              height: "44px",
+              fontFamily: "var(--font-body)",
+              fontSize: "16px",
+              fontWeight: 400,
+              lineHeight: 1.5,
+              outline: "none",
+              caretColor: "var(--color-ink)",
+              paddingLeft: leftAddon ? "24px" : undefined,
+              paddingRight: rightAddon ? "24px" : undefined,
+              colorScheme: "dark",
               ...externalStyle,
-              backgroundColor: "var(--color-surface)",
-              color: "var(--color-text)",
-              colorScheme: "inherit",
             }}
-            className={`block w-full rounded-lg border !bg-[var(--color-surface)] py-2.5 !text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-500)]/20 disabled:cursor-not-allowed disabled:opacity-60 [&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_var(--color-surface)] [&:-webkit-autofill]:[color:var(--color-text)] ${leftAddon ? "pl-10" : "pl-3"
-              } ${rightAddon ? "pr-10" : "pr-3"} ${error
-                ? "border-[var(--color-error)] focus:border-[var(--color-error)] focus:ring-[var(--color-error)]/20"
-                : "border-[var(--color-border)]"
-              } ${className}`}
+            onFocus={(e) => {
+              e.currentTarget.style.borderBottomColor = error
+                ? "var(--color-error)"
+                : "var(--color-ink)";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderBottomColor = error
+                ? "var(--color-error)"
+                : "var(--color-hairline-strong)";
+            }}
             {...props}
           />
           {rightAddon && (
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 text-[var(--color-text-muted)]">
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                bottom: 0,
+                right: 0,
+                display: "flex",
+                alignItems: "center",
+                color: "var(--color-muted)",
+              }}
+            >
               {rightAddon}
             </div>
           )}
         </div>
         {error && (
-          <p id={`${inputId}-error`} className="mt-1.5 text-sm text-[var(--color-error)]" role="alert">
+          <p
+            id={`${inputId}-error`}
+            className="type-caption"
+            role="alert"
+            style={{ marginTop: "8px", color: "var(--color-error)" }}
+          >
             {error}
           </p>
         )}
         {helperText && !error && (
-          <p id={`${inputId}-helper`} className="mt-1.5 text-sm text-[var(--color-text-muted)]">
+          <p
+            id={`${inputId}-helper`}
+            className="type-body-sm"
+            style={{ marginTop: "8px", color: "var(--color-muted)" }}
+          >
             {helperText}
           </p>
         )}

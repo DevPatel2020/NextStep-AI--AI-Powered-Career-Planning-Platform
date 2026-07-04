@@ -7,13 +7,12 @@ import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { Card } from "@/components/ui/Card";
 
 const roleOptions = [
-  { value: "student", label: "Student" },
-  { value: "recent_graduate", label: "Recent graduate" },
-  { value: "career_switcher", label: "Career switcher" },
-  { value: "other", label: "Other" },
+  { value: "student",          label: "Student" },
+  { value: "recent_graduate",  label: "Recent graduate" },
+  { value: "career_switcher",  label: "Career switcher" },
+  { value: "other",            label: "Other" },
 ];
 
 const interestTags = [
@@ -105,121 +104,152 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="w-full max-w-6xl">
-      <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-        <div className="hidden flex-col justify-center lg:flex">
-          <h2 className="text-2xl font-bold text-[var(--color-text)]">
-            Start your career journey
-          </h2>
-          <p className="mt-2 text-[var(--color-text-muted)]">
-            Create an account to get personalized roadmaps, quiz results, and
-            learning recommendations powered by AI.
-          </p>
-          <div className="mt-8 flex h-48 items-center justify-center rounded-xl border border-[var(--color-border)] bg-[var(--color-secondary-50)] text-[var(--color-secondary-700)]">
-            <span className="text-sm font-medium">Onboarding illustration</span>
-          </div>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "var(--color-canvas)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "40px",
+      }}
+    >
+      <div style={{ width: "100%", maxWidth: "460px" }}>
+
+        {/* Wordmark */}
+        <div style={{ textAlign: "center", marginBottom: "64px" }}>
+          <Link href="/" style={{ textDecoration: "none" }}>
+            <span className="type-wordmark" style={{ color: "var(--color-ink)" }}>
+              CAREERSENCE
+            </span>
+          </Link>
         </div>
 
-        <Card padding="lg" className="mx-auto w-full max-w-md">
-          <h1 className="text-xl font-semibold text-[var(--color-text)]">
-            Create your account
+        {/* Form heading */}
+        <div style={{ marginBottom: "48px" }}>
+          <p className="type-caption" style={{ color: "var(--color-muted)", marginBottom: "12px" }}>
+            CREATE ACCOUNT
+          </p>
+          <h1
+            className="type-display-md"
+            style={{ color: "var(--color-ink)" }}
+          >
+            START YOUR JOURNEY
           </h1>
-          <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-            We&apos;ll use this to personalize your experience.
-          </p>
+        </div>
 
-          {formError && (
-            <div
-              className="mt-4 rounded-lg border border-[var(--color-error)] bg-red-50 p-3 text-sm text-red-800"
-              role="alert"
-            >
-              {formError}
+        {/* Error */}
+        {formError && (
+          <div
+            role="alert"
+            style={{
+              marginBottom: "24px",
+              padding: "12px 16px",
+              border: "1px solid var(--color-error)",
+            }}
+          >
+            <p className="type-caption" style={{ color: "var(--color-error)" }}>
+              {formError.toUpperCase()}
+            </p>
+          </div>
+        )}
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+          <Input
+            label="Name"
+            type="text"
+            autoComplete="name"
+            placeholder="Your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            error={errors.name}
+          />
+          <Input
+            label="Email"
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={errors.email}
+          />
+          <Input
+            label="Password"
+            type="password"
+            autoComplete="new-password"
+            placeholder="At least 8 characters"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={errors.password}
+          />
+          <Select
+            label="I am a"
+            placeholder="Select your role"
+            options={roleOptions}
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            error={errors.role}
+          />
+
+          {/* Interests */}
+          <div>
+            <p className="type-caption" style={{ color: "var(--color-muted)", marginBottom: "16px" }}>
+              INTERESTS (OPTIONAL)
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+              {interestTags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  id={`interest-${tag.toLowerCase()}`}
+                  onClick={() => toggleInterest(tag)}
+                  className="type-caption"
+                  style={{
+                    padding: "6px 16px",
+                    background: "transparent",
+                    border: interests.has(tag)
+                      ? "1px solid var(--color-ink)"
+                      : "1px solid var(--color-hairline)",
+                    color: interests.has(tag)
+                      ? "var(--color-ink)"
+                      : "var(--color-muted)",
+                    cursor: "pointer",
+                    borderRadius: "0",
+                    transition: "border-color 0.15s ease, color 0.15s ease",
+                  }}
+                >
+                  {tag.toUpperCase()}
+                </button>
+              ))}
             </div>
-          )}
+          </div>
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-            <Input
-              label="Name"
-              type="text"
-              autoComplete="name"
-              placeholder="Your name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              error={errors.name}
-            />
-            <Input
-              label="Email"
-              type="email"
-              autoComplete="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={errors.email}
-            />
-            <Input
-              label="Password"
-              type="password"
-              autoComplete="new-password"
-              placeholder="At least 8 characters"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              error={errors.password}
-            />
-            <Select
-              label="I am a"
-              placeholder="Select your role"
-              options={roleOptions}
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              error={errors.role}
-            />
+          <Button
+            type="submit"
+            variant="primary"
+            fullWidth
+            loading={loading}
+            style={{ marginTop: "8px" }}
+          >
+            CREATE ACCOUNT
+          </Button>
+        </form>
 
-            <div>
-              <p className="mb-2 text-sm font-medium text-[var(--color-text)]">
-                Interests (optional)
-              </p>
-              <p className="mb-2 text-xs text-[var(--color-text-muted)]">
-                We&apos;ll tailor recommendations to these areas.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {interestTags.map((tag) => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => toggleInterest(tag)}
-                    className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
-                      interests.has(tag)
-                        ? "bg-[var(--color-primary-600)] text-white"
-                        : "border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:border-[var(--color-primary-300)]"
-                    }`}
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
-            </div>
+        {/* Footer link */}
+        <p
+          className="type-body-sm"
+          style={{ marginTop: "40px", textAlign: "center", color: "var(--color-muted)" }}
+        >
+          Already have an account?{" "}
+          <Link
+            href="/signin"
+            style={{ color: "var(--color-link)", textDecoration: "none" }}
+          >
+            Sign in
+          </Link>
+        </p>
 
-            <Button
-              type="submit"
-              variant="primary"
-              fullWidth
-              loading={loading}
-              className="mt-6"
-            >
-              Create account
-            </Button>
-          </form>
-
-          <p className="mt-6 text-center text-sm text-[var(--color-text-muted)]">
-            Already have an account?{" "}
-            <Link
-              href="/signin"
-              className="font-medium text-[var(--color-primary-600)] hover:underline"
-            >
-              Sign in
-            </Link>
-          </p>
-        </Card>
       </div>
     </div>
   );

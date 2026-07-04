@@ -46,7 +46,7 @@ export function TabsList({
   return (
     <div
       role="tablist"
-      className={`flex gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-1 ${className}`}
+      className={`flex gap-6 border-b border-[var(--color-hairline-strong)] ${className}`}
     >
       {children}
     </div>
@@ -72,10 +72,10 @@ export function TabsTrigger({
       role="tab"
       aria-selected={isActive}
       onClick={() => ctx.onChange(value)}
-      className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+      className={`type-nav pb-3 pt-2 transition-colors border-b-2 ${
         isActive
-          ? "bg-[var(--color-surface)] text-[var(--color-primary-600)] shadow-[var(--shadow-sm)]"
-          : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+          ? "border-[var(--color-ink)] text-[var(--color-ink)]"
+          : "border-transparent text-[var(--color-muted)] hover:text-[var(--color-ink)]"
       } ${className}`}
     >
       {children}

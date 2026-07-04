@@ -13,38 +13,53 @@ interface ResourceCardProps {
 
 export function ResourceCard({ resource, onSave, isSaved }: ResourceCardProps) {
   return (
-    <Card padding="md" className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-start justify-between gap-2">
+    <Card padding="md" style={{ display: "flex", flexDirection: "column", gap: "16px", height: "100%" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px" }}>
         <Badge variant="primary" size="sm">
-          {resource.type}
+          {resource.type.toUpperCase()}
         </Badge>
-        <Badge variant="outline" size="sm">
-          {resource.level}
+        <Badge variant="default" size="sm">
+          {resource.level.toUpperCase()}
         </Badge>
       </div>
-      <h3 className="font-semibold text-[var(--color-text)]">{resource.title}</h3>
-      <p className="text-sm text-[var(--color-text-muted)] line-clamp-2">
-        {resource.description}
-      </p>
-      <div className="mt-auto flex flex-wrap items-center justify-between gap-2 text-sm text-[var(--color-text-muted)]">
-        <span>{formatDuration(resource.durationMinutes)}</span>
-        <span>{resource.source}</span>
+
+      <div>
+        <h3 className="type-title-md" style={{ color: "var(--color-ink)", margin: 0 }}>
+          {resource.title.toUpperCase()}
+        </h3>
+        <p className="type-body-sm" style={{ color: "var(--color-muted)", marginTop: "8px", margin: 0, lineClamp: 2, WebkitLineClamp: 2, display: "-webkit-box", WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: 1.5 }}>
+          {resource.description}
+        </p>
       </div>
-      <div className="flex gap-2">
+
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "12px", marginTop: "auto", borderTop: "1px solid var(--color-hairline)", paddingTop: "12px" }}>
+        <span className="type-caption" style={{ color: "var(--color-muted-soft)", fontSize: "10px" }}>
+          {formatDuration(resource.durationMinutes).toUpperCase()}
+        </span>
+        <span className="type-caption" style={{ color: "var(--color-muted-soft)", fontSize: "10px" }}>
+          {resource.source.toUpperCase()}
+        </span>
+      </div>
+
+      <div style={{ display: "flex", gap: "12px" }}>
         <Link
           href={resource.url}
-          className="flex flex-1 items-center justify-center rounded-lg bg-[var(--color-primary-600)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--color-primary-700)]"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-bugatti"
+          style={{ height: "36px", padding: "0 20px", fontSize: "11px", flex: 1, textAlign: "center", textDecoration: "none" }}
         >
-          View resource
+          VIEW RESOURCE
         </Link>
         {onSave && (
           <Button
-            variant="outline"
+            variant={isSaved ? "outline" : "primary"}
             size="sm"
             onClick={onSave}
             aria-pressed={isSaved}
+            style={{ flex: 1 }}
           >
-            {isSaved ? "Saved" : "Save"}
+            {isSaved ? "SAVED" : "SAVE"}
           </Button>
         )}
       </div>

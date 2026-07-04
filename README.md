@@ -69,7 +69,7 @@ CareerSence is a modern web application designed to help individuals navigate th
 
 5. **Start the Development Server**:
    ```bash
-   npm run dev
+   npx prisma migrate dev
    ```
    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 

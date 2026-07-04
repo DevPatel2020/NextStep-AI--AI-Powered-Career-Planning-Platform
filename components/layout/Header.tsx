@@ -1,21 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
-import { DarkModeToggle } from "@/components/ui/DarkModeToggle";
 
 const navLinks = [
-  { href: "/overview", label: "Overview" },
-  { href: "/ai-roadmap", label: "AI Roadmap" },
-  { href: "/career-quiz", label: "Career Quiz" },
-  { href: "/career-tree", label: "Career Tree" },
+  { href: "/overview",           label: "Overview" },
+  { href: "/ai-roadmap",         label: "AI Roadmap" },
+  { href: "/career-quiz",        label: "Career Quiz" },
+  { href: "/career-tree",        label: "Career Tree" },
   { href: "/learning-resources", label: "Learning" },
-  { href: "/job-hunting", label: "Job Hunting" },
-  { href: "/college-finder", label: "College Finder" },
-  { href: "/analyze", label: "Analyze" },
+  { href: "/job-hunting",        label: "Jobs" },
+  { href: "/college-finder",     label: "Colleges" },
+  { href: "/analyze",            label: "Analyze" },
 ];
 
 export function Header() {
@@ -24,185 +22,285 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const isLoggedIn = status === "authenticated" && !!session?.user;
-  const userInitial = session?.user?.name?.[0]?.toUpperCase() ?? session?.user?.email?.[0]?.toUpperCase() ?? "U";
-
+  const userInitial =
+    session?.user?.name?.[0]?.toUpperCase() ??
+    session?.user?.email?.[0]?.toUpperCase() ??
+    "U";
   const isAuthPage = pathname === "/signin" || pathname === "/signup";
 
   return (
     <header
-      className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-sm)]"
       role="banner"
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50,
+        height: "56px",
+        background: "transparent",
+        borderBottom: mobileMenuOpen
+          ? "1px solid var(--color-hairline)"
+          : "none",
+      }}
     >
-      <div className="mx-auto flex h-16 items-center justify-between gap-4 px-12">
+      {/* Main bar */}
+      <div
+        style={{
+          height: "56px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 40px",
+          position: "relative",
+        }}
+      >
+        {/* Left — MENU label or hamburger on mobile */}
+        <div style={{ display: "flex", alignItems: "center", gap: "24px", width: "160px" }}>
+          {isLoggedIn && (
+            <button
+              type="button"
+              id="mobile-menu-btn"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-expanded={mobileMenuOpen}
+              aria-label="Toggle navigation"
+              style={{
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              {/* Hamburger icon */}
+              <svg
+                width="18"
+                height="12"
+                viewBox="0 0 18 12"
+                fill="none"
+                style={{ display: "block" }}
+              >
+                <line x1="0" y1="1"  x2="18" y2="1"  stroke="white" strokeWidth="1.5" />
+                <line x1="0" y1="6"  x2="18" y2="6"  stroke="white" strokeWidth="1.5" />
+                <line x1="0" y1="11" x2="18" y2="11" stroke="white" strokeWidth="1.5" />
+              </svg>
+              <span className="type-nav" style={{ color: "var(--color-ink)" }}>
+                {mobileMenuOpen ? "CLOSE" : "MENU"}
+              </span>
+            </button>
+          )}
+
+          {!isLoggedIn && !isAuthPage && (
+            <Link
+              href="/signin"
+              className="type-nav"
+              style={{ color: "var(--color-muted)", textDecoration: "none" }}
+            >
+              SIGN IN
+            </Link>
+          )}
+        </div>
+
+        {/* Center — Wordmark */}
         <Link
           href="/"
-          className="flex shrink-0 items-center gap-2 text-lg font-semibold text-[var(--color-text)] no-underline"
           aria-label="Careersence home"
+          style={{
+            position: "absolute",
+            left: "50%",
+            transform: "translateX(-50%)",
+            textDecoration: "none",
+          }}
         >
-          <Image src="/logo.png" alt="Careersence logo" width={40} height={40} className="h-10 w-10 rounded" />
-          <span className="hidden sm:inline">CareerSense</span>
+          <span className="type-wordmark" style={{ color: "var(--color-ink)" }}>
+            CAREERSENCE
+          </span>
         </Link>
 
-        {isLoggedIn && (
-          <nav
-            className="hidden items-center gap-1 md:flex"
-            aria-label="Main navigation"
-          >
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${pathname === link.href
-                  ? "bg-[var(--color-primary-50)] text-[var(--color-primary-700)]"
-                  : "text-[var(--color-text-muted)] hover:bg-[var(--color-background)] hover:text-[var(--color-text)]"
-                  }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        )}
-
-        <div className="flex items-center gap-2">
-          <DarkModeToggle />
+        {/* Right — auth or store-like slot */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "16px",
+            width: "160px",
+            justifyContent: "flex-end",
+          }}
+        >
           {!isAuthPage && (
             <>
               {isLoggedIn ? (
-                <div className="relative">
+                <div style={{ position: "relative" }}>
                   <button
                     type="button"
+                    id="user-menu-btn"
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-primary-100)] text-[var(--color-primary-700)]"
                     aria-expanded={userMenuOpen}
                     aria-haspopup="true"
+                    aria-label="User menu"
+                    style={{
+                      width: "28px",
+                      height: "28px",
+                      borderRadius: "50%",
+                      border: "1px solid var(--color-hairline-strong)",
+                      background: "transparent",
+                      color: "var(--color-ink)",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "11px",
+                      letterSpacing: "0",
+                    }}
                   >
-                    <span className="text-sm font-medium">{userInitial}</span>
+                    {userInitial}
                   </button>
+
                   {userMenuOpen && (
                     <>
                       <div
-                        className="fixed inset-0 z-40"
+                        style={{ position: "fixed", inset: 0, zIndex: 40 }}
                         aria-hidden="true"
                         onClick={() => setUserMenuOpen(false)}
                       />
                       <div
-                        className="absolute right-0 top-full z-50 mt-2 w-48 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] py-1 shadow-[var(--shadow-lg)]"
                         role="menu"
+                        style={{
+                          position: "absolute",
+                          right: 0,
+                          top: "calc(100% + 8px)",
+                          zIndex: 50,
+                          minWidth: "160px",
+                          background: "var(--color-surface-card)",
+                          border: "1px solid var(--color-hairline)",
+                          padding: "8px 0",
+                        }}
                       >
                         <Link
                           href="/profile"
-                          className="block px-4 py-2 text-sm text-[var(--color-text)] no-underline hover:bg-[var(--color-background)]"
                           role="menuitem"
+                          className="type-nav"
                           onClick={() => setUserMenuOpen(false)}
+                          style={{
+                            display: "block",
+                            padding: "10px 16px",
+                            color: "var(--color-body)",
+                            textDecoration: "none",
+                          }}
                         >
-                          My Profile
+                          PROFILE
                         </Link>
                         <button
                           type="button"
-                          className="w-full px-4 py-2 text-left text-sm text-[var(--color-text-muted)] hover:bg-[var(--color-background)]"
                           role="menuitem"
+                          className="type-nav"
                           onClick={() => {
                             setUserMenuOpen(false);
                             signOut({ callbackUrl: "/" });
                           }}
+                          style={{
+                            display: "block",
+                            width: "100%",
+                            padding: "10px 16px",
+                            background: "transparent",
+                            border: "none",
+                            textAlign: "left",
+                            color: "var(--color-muted)",
+                            cursor: "pointer",
+                            letterSpacing: "2px",
+                            fontSize: "12px",
+                            fontFamily: "var(--font-mono)",
+                            textTransform: "uppercase",
+                          }}
                         >
-                          Sign out
+                          SIGN OUT
                         </button>
                       </div>
                     </>
                   )}
                 </div>
               ) : (
-                <>
-                  <Link
-                    href="/signin"
-                    className="hidden rounded-lg px-3 py-2 text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text)] sm:block"
-                  >
-                    Sign in
-                  </Link>
-                  <Link
-                    href="/signup"
-                    className="rounded-lg bg-[var(--color-primary-600)] px-4 py-2 text-sm font-medium text-white shadow-[var(--shadow-sm)] transition-colors hover:bg-[var(--color-primary-700)]"
-                  >
-                    Sign up
-                  </Link>
-                </>
+                <Link
+                  href="/signup"
+                  className="btn-bugatti"
+                  style={{ height: "32px", padding: "0 20px", fontSize: "11px" }}
+                >
+                  GET STARTED
+                </Link>
               )}
             </>
           )}
-
-          <button
-            type="button"
-            className="flex h-10 w-10 items-center justify-center rounded-lg text-[var(--color-text)] md:hidden"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-expanded={mobileMenuOpen}
-            aria-label="Toggle menu"
-          >
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden
-            >
-              {mobileMenuOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              )}
-            </svg>
-          </button>
         </div>
       </div>
 
-      {mobileMenuOpen && (
+      {/* Full-screen slide-down nav (when MENU is open) */}
+      {mobileMenuOpen && isLoggedIn && (
         <div
-          className="border-t border-[var(--color-border)] bg-[var(--color-surface)] md:hidden"
           role="navigation"
-          aria-label="Mobile menu"
+          aria-label="Main navigation"
+          style={{
+            position: "fixed",
+            top: "56px",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "var(--color-canvas)",
+            borderTop: "1px solid var(--color-hairline)",
+            padding: "64px 40px",
+            zIndex: 99,
+            overflowY: "auto",
+          }}
         >
-          <div className="flex flex-col gap-1 px-4 py-3">
-            {isLoggedIn && navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`rounded-lg px-3 py-2 text-sm font-medium ${pathname === link.href
-                  ? "bg-[var(--color-primary-50)] text-[var(--color-primary-700)]"
-                  : "text-[var(--color-text)]"
-                  }`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
-            {!isLoggedIn && (
-              <div className="mt-2 flex gap-2 border-t border-[var(--color-border)] pt-3">
+          <div
+            style={{
+              maxWidth: "1280px",
+              margin: "0 auto",
+              width: "100%",
+            }}
+          >
+            <nav
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+                gap: "24px 40px",
+              }}
+            >
+              {navLinks.map((link) => (
                 <Link
-                  href="/signin"
-                  className="flex-1 rounded-lg border border-[var(--color-border)] px-3 py-2 text-center text-sm font-medium"
+                  key={link.href}
+                  href={link.href}
+                  className="type-nav"
                   onClick={() => setMobileMenuOpen(false)}
+                  style={{
+                    display: "block",
+                    padding: "16px 0",
+                    borderBottom: "1px solid var(--color-hairline)",
+                    color:
+                      pathname === link.href
+                        ? "var(--color-ink)"
+                        : "var(--color-muted)",
+                    textDecoration: "none",
+                    transition: "color 0.15s ease",
+                  }}
                 >
-                  Sign in
+                  {link.label.toUpperCase()}
+                  {pathname === link.href && (
+                    <span
+                      style={{
+                        display: "inline-block",
+                        marginLeft: "8px",
+                        color: "var(--color-ink)",
+                      }}
+                    >
+                      —
+                    </span>
+                  )}
                 </Link>
-                <Link
-                  href="/signup"
-                  className="flex-1 rounded-lg bg-[var(--color-primary-600)] px-3 py-2 text-center text-sm font-medium text-white"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Sign up
-                </Link>
-              </div>
-            )}
+              ))}
+            </nav>
           </div>
         </div>
       )}

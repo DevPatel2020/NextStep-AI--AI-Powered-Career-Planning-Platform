@@ -1,11 +1,9 @@
+// Auth layout — the auth pages manage their own full-canvas layout
+// We simply pass children through without the normal header offset
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-[var(--color-background)] px-12 py-4">
-      {children}
-    </div>
-  );
+  return <>{children}</>;
 }

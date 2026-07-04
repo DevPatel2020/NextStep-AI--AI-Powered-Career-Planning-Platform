@@ -1,7 +1,6 @@
 "use client";
 
 import { ReactNode } from "react";
-import { motion } from "framer-motion";
 
 interface PageShellProps {
   children: ReactNode;
@@ -12,14 +11,6 @@ interface PageShellProps {
   maxWidth?: "sm" | "md" | "lg" | "xl" | "full";
 }
 
-const maxWidthClasses = {
-  sm: "max-w-4xl",
-  md: "max-w-5xl",
-  lg: "max-w-6xl",
-  xl: "max-w-7xl",
-  full: "",
-};
-
 export function PageShell({
   children,
   title,
@@ -28,42 +19,93 @@ export function PageShell({
   action,
   maxWidth = "xl",
 }: PageShellProps) {
+  const maxWidthVal =
+    maxWidth === "sm"
+      ? "960px"
+      : maxWidth === "md"
+      ? "1140px"
+      : maxWidth === "lg"
+      ? "1280px"
+      : maxWidth === "xl"
+      ? "1440px"
+      : "100%";
+
   return (
-    <div className="mx-auto w-full px-12 py-4">
+    <div
+      style={{
+        width: "100%",
+        padding: "64px 40px",
+        background: "var(--color-canvas)",
+        color: "var(--color-body)",
+      }}
+    >
       <div
-        className={`mx-auto ${maxWidthClasses[maxWidth]} ${sidebar ? "flex gap-8 lg:flex-row" : ""
-          }`}
+        style={{
+          maxWidth: maxWidthVal,
+          margin: "0 auto",
+          width: "100%",
+          display: sidebar ? "flex" : "block",
+          gap: sidebar ? "48px" : undefined,
+        }}
       >
         {sidebar && (
           <aside
-            className="shrink-0 lg:w-64"
+            style={{
+              flexShrink: 0,
+              width: "260px",
+            }}
             aria-label="Page sidebar"
           >
             {sidebar}
           </aside>
         )}
-        <motion.div
-          className="min-w-0 flex-1"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
+        <div
+          style={{
+            flex: 1,
+            minWidth: 0,
+          }}
         >
-          <header className="mb-8 flex items-start justify-between">
+          <header
+            style={{
+              marginBottom: "48px",
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "space-between",
+              gap: "24px",
+              borderBottom: "1px solid var(--color-hairline)",
+              paddingBottom: "32px",
+            }}
+          >
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-[var(--color-text)] sm:text-3xl">
+              <h1
+                className="type-display-md"
+                style={{
+                  color: "var(--color-ink)",
+                  margin: 0,
+                }}
+              >
                 {title}
               </h1>
               {description && (
-                <p className="mt-2 text-[var(--color-text-muted)]">
+                <p
+                  className="type-body-md"
+                  style={{
+                    marginTop: "12px",
+                    color: "var(--color-muted)",
+                    maxWidth: "720px",
+                    lineHeight: 1.6,
+                  }}
+                >
                   {description}
                 </p>
               )}
             </div>
-            {action && <div>{action}</div>}
+            {action && <div style={{ flexShrink: 0 }}>{action}</div>}
           </header>
           {children}
-        </motion.div>
+        </div>
       </div>
     </div>
   );
 }
+

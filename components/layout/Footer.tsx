@@ -1,100 +1,127 @@
 import Link from "next/link";
-import Image from "next/image";
 
-const footerLinks = [
-  { href: "/", label: "About" },
-  { href: "/", label: "FAQ" },
-  { href: "/", label: "Contact" },
-  { href: "/", label: "Terms" },
-  { href: "/", label: "Privacy" },
+const footerCols = [
+  {
+    heading: "Careersence",
+    links: [
+      { href: "/overview",  label: "Overview" },
+      { href: "/analyze",   label: "Analyze" },
+      { href: "/profile",   label: "Profile" },
+    ],
+  },
+  {
+    heading: "Tools",
+    links: [
+      { href: "/career-quiz",        label: "Career Quiz" },
+      { href: "/ai-roadmap",         label: "AI Roadmap" },
+      { href: "/career-tree",        label: "Career Tree" },
+    ],
+  },
+  {
+    heading: "Resources",
+    links: [
+      { href: "/learning-resources", label: "Learning" },
+      { href: "/job-hunting",        label: "Job Hunting" },
+      { href: "/college-finder",     label: "College Finder" },
+    ],
+  },
+  {
+    heading: "Legal",
+    links: [
+      { href: "/", label: "Privacy" },
+      { href: "/", label: "Terms" },
+      { href: "/", label: "Contact" },
+    ],
+  },
 ];
 
 export function Footer() {
   return (
     <footer
-      className="mt-auto border-t border-[var(--color-border)] bg-[var(--color-surface)]"
       role="contentinfo"
+      style={{
+        background: "var(--color-canvas)",
+        borderTop: "1px solid var(--color-hairline)",
+        padding: "64px 40px 40px",
+      }}
     >
-      <div className="mx-auto px-12 py-4">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-          <div className="lg:col-span-2">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-lg font-semibold text-[var(--color-primary-600)] no-underline"
+      {/* 4-column link grid */}
+      <div
+        style={{
+          maxWidth: "1280px",
+          margin: "0 auto",
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gap: "40px",
+        }}
+      >
+        {footerCols.map((col) => (
+          <div key={col.heading}>
+            <p
+              className="type-caption"
+              style={{
+                color: "var(--color-muted)",
+                marginBottom: "20px",
+              }}
             >
-              <Image src="/icon.png" alt="Careersence logo" width={32} height={32} className="h-8 w-8" />
-              Careersence
-            </Link>
-            <p className="mt-2 max-w-md text-sm text-[var(--color-text-muted)]">
-              AI-powered career and education guidance for students and
-              early-career professionals. Discover your path, build skills, and
-              land the right role.
+              {col.heading}
             </p>
-            <p className="mt-2 text-xs text-[var(--color-text-muted)]">
-              Recommendations and insights are powered by AI to personalize your
-              experience.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
-              Product
-            </h3>
-            <ul className="mt-4 space-y-2" role="list">
-              <li>
-                <Link
-                  href="/overview"
-                  className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-                >
-                  Overview
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/career-quiz"
-                  className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-                >
-                  Career Quiz
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/ai-roadmap"
-                  className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-                >
-                  AI Roadmap
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/api"
-                  className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-                >
-                  API
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
-              Legal &amp; support
-            </h3>
-            <ul className="mt-4 space-y-2" role="list">
-              {footerLinks.map((link) => (
+            <ul role="list" style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "12px" }}>
+              {col.links.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                    className="type-nav"
+                    style={{
+                      color: "var(--color-muted-soft)",
+                      textDecoration: "none",
+                      transition: "color 0.15s ease",
+                    }}
+                    onMouseEnter={(e) =>
+                      ((e.target as HTMLElement).style.color = "var(--color-body)")
+                    }
+                    onMouseLeave={(e) =>
+                      ((e.target as HTMLElement).style.color = "var(--color-muted-soft)")
+                    }
                   >
-                    {link.label}
+                    {link.label.toUpperCase()}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
-        </div>
-        <div className="mt-8 border-t border-[var(--color-border)] pt-8 text-center text-sm text-[var(--color-text-muted)]">
-          &copy; {new Date().getFullYear()} Careersence. All rights reserved.
-        </div>
+        ))}
+      </div>
+
+      {/* Bottom — wordmark + copyright */}
+      <div
+        style={{
+          maxWidth: "1280px",
+          margin: "64px auto 0",
+          borderTop: "1px solid var(--color-hairline)",
+          paddingTop: "32px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "16px",
+          textAlign: "center",
+        }}
+      >
+        <Link
+          href="/"
+          aria-label="Careersence home"
+          style={{ textDecoration: "none" }}
+        >
+          <span className="type-wordmark" style={{ color: "var(--color-muted)" }}>
+            CAREERSENCE
+          </span>
+        </Link>
+        <p
+          className="type-body-sm"
+          style={{ color: "var(--color-muted-soft)" }}
+        >
+          &copy; {new Date().getFullYear()} Careersence. AI-powered career guidance.
+        </p>
       </div>
     </footer>
   );

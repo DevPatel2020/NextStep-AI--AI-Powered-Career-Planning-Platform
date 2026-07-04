@@ -81,10 +81,22 @@ export default function CareerQuizPage() {
         maxWidth="xl"
       >
         <Card padding="lg">
-          <div className="flex flex-col items-center py-8 text-center">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
+          <div style={{ display: "flex", flexDirection: "column", itemsCenter: "center", padding: "32px 0", textAlign: "center", gap: "16px" }}>
+            <div
+              style={{
+                display: "flex",
+                height: "56px",
+                width: "56px",
+                alignItems: "center",
+                justifyContent: "center",
+                border: "1px solid var(--color-error)",
+                color: "var(--color-error)",
+                margin: "0 auto",
+              }}
+            >
               <svg
-                className="h-7 w-7 text-red-600"
+                width="24"
+                height="24"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -92,23 +104,23 @@ export default function CareerQuizPage() {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                   d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-[var(--color-text)]">
-              Something went wrong
+            <h3 className="type-title-md" style={{ color: "var(--color-ink)", margin: 0 }}>
+              SOMETHING WENT WRONG
             </h3>
-            <p className="mt-2 max-w-md text-sm text-[var(--color-text-muted)]">
+            <p className="type-body-sm" style={{ color: "var(--color-muted)", margin: "0 auto", maxWidth: "480px" }}>
               {error}
             </p>
-            <div className="mt-6 flex gap-3">
+            <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginTop: "16px" }}>
               <Button variant="outline" onClick={retake}>
-                Start over
+                START OVER
               </Button>
               <Button variant="primary" onClick={goNext}>
-                Retry
+                RETRY
               </Button>
             </div>
           </div>
@@ -139,7 +151,7 @@ export default function CareerQuizPage() {
               title="Your career matches"
               description="Based on your answers, these careers are a strong fit. Explore and add them to your roadmap."
             />
-            <div className="space-y-6">
+            <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
               {results.map((career, i) => (
                 <motion.div
                   key={career.id}
@@ -148,62 +160,70 @@ export default function CareerQuizPage() {
                   transition={{ delay: i * 0.1 }}
                 >
                   <Card padding="lg">
-                    <div className="flex flex-wrap items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3">
-                          <h3 className="text-lg font-semibold text-[var(--color-text)]">
-                            {career.title}
+                    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-start", justifyContent: "space-between", gap: "24px" }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px" }}>
+                          <h3 className="type-title-md" style={{ color: "var(--color-ink)", margin: 0 }}>
+                            {career.title.toUpperCase()}
                           </h3>
                           <Badge variant="success" size="sm">
-                            {career.matchScore}% match
+                            {career.matchScore}% MATCH
                           </Badge>
                         </div>
-                        <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+                        <p className="type-body-sm" style={{ color: "var(--color-muted)", marginTop: "8px", margin: 0, lineHeight: 1.5 }}>
                           {career.summary}
                         </p>
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          <Badge variant="outline" size="sm">
-                            {formatSalaryRange(career.salaryMin, career.salaryMax)}
+                        <div style={{ marginTop: "12px", display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                          <Badge variant="default" size="sm">
+                            {formatSalaryRange(career.salaryMin, career.salaryMax).toUpperCase()}
                           </Badge>
-                          <Badge variant="outline" size="sm">
-                            {career.education}
+                          <Badge variant="secondary" size="sm">
+                            {career.education.toUpperCase()}
                           </Badge>
                         </div>
-                        <p className="mt-2 text-sm text-[var(--color-text-muted)]">
-                          Key skills: {career.skills.join(", ")}
+                        <p className="type-body-sm" style={{ color: "var(--color-muted-soft)", marginTop: "12px", margin: 0 }}>
+                          KEY SKILLS: {career.skills.join(", ").toUpperCase()}
                         </p>
                       </div>
-                      <div className="flex flex-col items-end gap-2">
-                        <div className="flex flex-wrap gap-2">
+                      <div style={{ display: "flex", flexDirection: "column", gap: "12px", alignItems: "flex-end" }}>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
                           {roadmapAdded.has(career.id) ? (
-                            <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white">
-                              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                              Added to roadmap
+                            <span
+                              className="type-caption"
+                              style={{
+                                display: "inline-flex",
+                                height: "36px",
+                                padding: "0 20px",
+                                alignItems: "center",
+                                gap: "8px",
+                                border: "1px solid var(--color-hairline)",
+                                color: "var(--color-muted-soft)",
+                                fontFamily: "var(--font-mono)",
+                                fontSize: "11px",
+                              }}
+                            >
+                              ADDED TO ROADMAP
                             </span>
                           ) : (
-                            <Button
-                              variant="primary"
-                              size="sm"
+                            <button
                               onClick={() => addToRoadmap(career)}
                               disabled={roadmapLoading.has(career.id)}
+                              className="btn-bugatti"
+                              style={{ height: "36px", padding: "0 20px", fontSize: "11px" }}
                             >
-                              {roadmapLoading.has(career.id) ? (
-                                <span className="inline-flex items-center gap-2">
-                                  <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
-                                  Generating…
-                                </span>
-                              ) : "Add to roadmap"}
-                            </Button>
+                              {roadmapLoading.has(career.id) ? "GENERATING…" : "ADD TO ROADMAP"}
+                            </button>
                           )}
                           <Link
                             href={"/learning-resources?q=" + encodeURIComponent(career.title)}
-                            className="inline-flex items-center justify-center rounded-lg border-2 border-[var(--color-primary-600)] bg-transparent px-4 py-2 text-sm font-medium text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)]"
+                            className="btn-bugatti"
+                            style={{ height: "36px", padding: "0 20px", fontSize: "11px", textDecoration: "none" }}
                           >
-                            Explore learning
+                            EXPLORE LEARNING
                           </Link>
                         </div>
                         {roadmapError[career.id] && (
-                          <p className="text-xs text-red-500">{roadmapError[career.id]}</p>
+                          <p className="type-caption" style={{ color: "var(--color-error)", fontSize: "10px", margin: 0 }}>{roadmapError[career.id]}</p>
                         )}
                       </div>
                     </div>
@@ -211,15 +231,20 @@ export default function CareerQuizPage() {
                 </motion.div>
               ))}
             </div>
-            <div className="mt-8 flex justify-center gap-4">
-              <Button variant="outline" onClick={retake}>
-                Retake quiz
-              </Button>
+            <div style={{ display: "flex", justifyContent: "center", gap: "16px", marginTop: "32px" }}>
+              <button
+                onClick={retake}
+                className="btn-bugatti"
+                style={{ height: "40px", padding: "0 24px", fontSize: "11px" }}
+              >
+                RETAKE QUIZ
+              </button>
               <Link
                 href="/ai-roadmap"
-                className="inline-flex items-center justify-center rounded-lg bg-[var(--color-primary-600)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--color-primary-700)]"
+                className="btn-bugatti"
+                style={{ height: "40px", padding: "0 24px", fontSize: "11px", textDecoration: "none" }}
               >
-                View your roadmap
+                VIEW ROADMAP
               </Link>
             </div>
           </motion.div>
@@ -254,13 +279,13 @@ export default function CareerQuizPage() {
                 onChange={submitAnswer}
               />
             )}
-            <div className="mt-8 flex justify-between">
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "32px" }}>
               <Button
                 variant="outline"
                 onClick={goBack}
                 disabled={currentStep === 0}
               >
-                Back
+                BACK
               </Button>
               <Button
                 variant="primary"
@@ -269,9 +294,9 @@ export default function CareerQuizPage() {
               >
                 {isLastQuestion
                   ? phase === "phase1"
-                    ? "Generate personalised questions"
-                    : "See results"
-                  : "Next"}
+                    ? "GENERATE PERSONALISED QUESTIONS"
+                    : "SEE RESULTS"
+                  : "NEXT"}
               </Button>
             </div>
           </motion.div>

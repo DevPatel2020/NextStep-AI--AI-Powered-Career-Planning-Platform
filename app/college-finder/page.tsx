@@ -183,8 +183,8 @@ export default function CollegeFinderPage() {
       description="Discover and compare colleges or programs aligned with your interests."
       maxWidth="xl"
     >
-      <Card padding="md" className="mb-8">
-        <h2 className="mb-4 text-lg font-semibold text-[var(--color-text)]">
+      <Card padding="md" className="mb-8 border border-[var(--color-hairline)] bg-[var(--color-surface-card)]">
+        <h2 className="mb-4 type-display-sm text-[var(--color-ink)]">
           Search colleges
         </h2>
         <div className="flex flex-wrap gap-4">
@@ -213,7 +213,7 @@ export default function CollegeFinderPage() {
           </div>
         </div>
         {error && (
-          <div className="mt-4 rounded-lg border border-[var(--color-error)] bg-red-50 p-3 text-sm text-red-800" role="alert">
+          <div className="mt-4 rounded-none border border-[var(--color-error)] bg-transparent p-3 type-body-md text-[var(--color-error)]" role="alert">
             {error}
           </div>
         )}
@@ -221,20 +221,20 @@ export default function CollegeFinderPage() {
 
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <h2 className="mb-4 text-lg font-semibold text-[var(--color-text)]">
+          <h2 className="mb-4 type-display-sm text-[var(--color-ink)] flex items-center">
             Results
             {colleges.length > 0 && (
-              <span className="ml-2 text-sm font-normal text-[var(--color-text-muted)]">
+              <span className="ml-4 type-caption text-[var(--color-muted)] normal-case">
                 ({colleges.length} colleges found)
               </span>
             )}
           </h2>
 
           {loading && (
-            <Card padding="lg">
+            <Card padding="lg" className="border border-[var(--color-hairline)] bg-[var(--color-surface-card)]">
               <div className="flex flex-col items-center justify-center gap-3 py-8">
-                <img src="/logo.png" alt="logo" className="h-16 w-16 object-contain animate-bounce" />
-                <p className="text-sm text-[var(--color-text-muted)]">
+                <div className="w-8 h-8 rounded-full border-t border-[var(--color-ink)] animate-spin"></div>
+                <p className="type-caption text-[var(--color-muted)]">
                   Searching colleges in {state} for {degreeType} in {field}...
                 </p>
               </div>
@@ -242,16 +242,16 @@ export default function CollegeFinderPage() {
           )}
 
           {!loading && !searched && (
-            <Card padding="lg">
-              <p className="text-center text-sm text-[var(--color-text-muted)]">
+            <Card padding="lg" className="border border-[var(--color-hairline)] bg-[var(--color-surface-card)]">
+              <p className="text-center type-body-md text-[var(--color-muted)]">
                 Select a state, field of study, and degree type, then click Search to find colleges.
               </p>
             </Card>
           )}
 
           {!loading && searched && colleges.length === 0 && !error && (
-            <Card padding="lg">
-              <p className="text-center text-sm text-[var(--color-text-muted)]">
+            <Card padding="lg" className="border border-[var(--color-hairline)] bg-[var(--color-surface-card)]">
+              <p className="text-center type-body-md text-[var(--color-muted)]">
                 No colleges found for this combination. Try different filters.
               </p>
             </Card>
@@ -279,15 +279,15 @@ export default function CollegeFinderPage() {
           )}
         </div>
         <div>
-          <Card padding="md" className="sticky top-24">
-            <h3 className="font-semibold text-[var(--color-text)]">
+          <Card padding="md" className="sticky top-24 border border-[var(--color-hairline)] bg-[var(--color-surface-card)]">
+            <h3 className="type-title-md text-[var(--color-ink)]">
               Your shortlist
             </h3>
-            <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+            <p className="mt-1 type-body-sm text-[var(--color-muted)]">
               Save colleges to compare key metrics side by side.
             </p>
             {shortlistedColleges.length === 0 ? (
-              <p className="mt-4 text-sm text-[var(--color-text-muted)]">
+              <p className="mt-4 type-body-sm text-[var(--color-muted)]">
                 No colleges in shortlist yet.
               </p>
             ) : (
@@ -295,13 +295,13 @@ export default function CollegeFinderPage() {
                 {shortlistedColleges.map((c) => (
                   <li
                     key={c.id}
-                    className="flex items-center justify-between rounded-lg border border-[var(--color-border)] p-2 text-sm"
+                    className="flex items-center justify-between rounded-none border border-[var(--color-hairline-strong)] p-2 type-body-sm text-[var(--color-ink)]"
                   >
                     <span className="font-medium">{c.name}</span>
                     <button
                       type="button"
                       onClick={() => removeFromShortlist(c.id)}
-                      className="text-[var(--color-error)] hover:underline"
+                      className="text-[var(--color-error)] type-caption hover:underline"
                     >
                       Remove
                     </button>

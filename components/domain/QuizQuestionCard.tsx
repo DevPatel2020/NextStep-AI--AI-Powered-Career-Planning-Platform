@@ -27,33 +27,49 @@ export function QuizQuestionCard({
   if (type === "likert") {
     return (
       <Card padding="lg">
-        <h3 className="mb-4 text-lg font-medium text-[var(--color-text)]">
-          {question}
+        <h3 className="type-title-md" style={{ color: "var(--color-ink)", marginBottom: "20px" }}>
+          {question.toUpperCase()}
         </h3>
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <span className="text-sm text-[var(--color-text-muted)]">
-            {likertLabels[0]}
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
+          <span className="type-body-sm" style={{ color: "var(--color-muted)" }}>
+            {likertLabels[0].toUpperCase()}
           </span>
-          <div className="flex flex-1 flex-wrap justify-center gap-2">
-            {options.map((opt) => (
-              <label
-                key={opt.value}
-                className="cursor-pointer rounded-lg border px-3 py-2 text-sm has-[:checked]:border-[var(--color-primary-600)] has-[:checked]:bg-[var(--color-primary-50)]"
-              >
-                <input
-                  type="radio"
-                  name={question.slice(0, 20)}
-                  value={opt.value}
-                  checked={value === opt.value}
-                  onChange={() => onChange(opt.value)}
-                  className="sr-only"
-                />
-                {opt.label}
-              </label>
-            ))}
+          <div style={{ display: "flex", flex: 1, flexWrap: "wrap", justifyContent: "center", gap: "8px" }}>
+            {options.map((opt) => {
+              const isChecked = value === opt.value;
+              return (
+                <label
+                  key={opt.value}
+                  style={{
+                    cursor: "pointer",
+                    border: isChecked ? "1px solid var(--color-ink)" : "1px solid var(--color-hairline)",
+                    background: isChecked ? "var(--color-surface-soft)" : "transparent",
+                    borderRadius: "0px",
+                    padding: "8px 16px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "all 0.2s ease-in-out",
+                  }}
+                  className="type-body-sm"
+                >
+                  <input
+                    type="radio"
+                    name={question.slice(0, 20)}
+                    value={opt.value}
+                    checked={isChecked}
+                    onChange={() => onChange(opt.value)}
+                    style={{ display: "none" }}
+                  />
+                  <span style={{ color: isChecked ? "var(--color-ink)" : "var(--color-body)" }}>
+                    {opt.label.toUpperCase()}
+                  </span>
+                </label>
+              );
+            })}
           </div>
-          <span className="text-sm text-[var(--color-text-muted)]">
-            {likertLabels[1]}
+          <span className="type-body-sm" style={{ color: "var(--color-muted)" }}>
+            {likertLabels[1].toUpperCase()}
           </span>
         </div>
       </Card>
@@ -62,34 +78,57 @@ export function QuizQuestionCard({
 
   return (
     <Card padding="lg">
-      <h3 className="mb-4 text-lg font-medium text-[var(--color-text)]">
-        {question}
+      <h3 className="type-title-md" style={{ color: "var(--color-ink)", marginBottom: "20px" }}>
+        {question.toUpperCase()}
       </h3>
-      <div className="space-y-2">
-        {options.map((opt) => (
-          <label
-            key={opt.value}
-            className="flex cursor-pointer items-center gap-3 rounded-lg border border-[var(--color-border)] px-4 py-3 transition-colors has-[:checked]:border-[var(--color-primary-600)] has-[:checked]:bg-[var(--color-primary-50)]"
-          >
-            <input
-              type={type === "multiple" ? "checkbox" : "radio"}
-              name={question.slice(0, 20)}
-              value={opt.value}
-              checked={type === "multiple" ? value?.includes(opt.value) : value === opt.value}
-              onChange={() =>
-                onChange(
-                  type === "multiple"
-                    ? value?.includes(opt.value)
-                      ? (value ?? "").replace(opt.value, "").replace(/\s*,\s*/, "")
-                      : [value, opt.value].filter(Boolean).join(",")
-                    : opt.value
-                )
-              }
-              className="h-4 w-4 rounded border-[var(--color-border)] text-[var(--color-primary-600)]"
-            />
-            <span className="text-[var(--color-text)]">{opt.label}</span>
-          </label>
-        ))}
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        {options.map((opt) => {
+          const isChecked = type === "multiple" ? value?.includes(opt.value) : value === opt.value;
+          return (
+            <label
+              key={opt.value}
+              style={{
+                display: "flex",
+                cursor: "pointer",
+                alignItems: "center",
+                gap: "12px",
+                border: isChecked ? "1px solid var(--color-ink)" : "1px solid var(--color-hairline)",
+                background: isChecked ? "var(--color-surface-soft)" : "transparent",
+                borderRadius: "0px",
+                padding: "12px 16px",
+                transition: "all 0.2s ease-in-out",
+              }}
+            >
+              <input
+                type={type === "multiple" ? "checkbox" : "radio"}
+                name={question.slice(0, 20)}
+                value={opt.value}
+                checked={isChecked}
+                onChange={() =>
+                  onChange(
+                    type === "multiple"
+                      ? value?.includes(opt.value)
+                        ? (value ?? "").replace(opt.value, "").replace(/\s*,\s*/, "")
+                        : [value, opt.value].filter(Boolean).join(",")
+                      : opt.value
+                  )
+                }
+                style={{
+                  width: "16px",
+                  height: "16px",
+                  borderRadius: "0px",
+                  border: "1px solid var(--color-hairline-strong)",
+                  accentColor: "var(--color-ink)",
+                  margin: 0,
+                  cursor: "pointer",
+                }}
+              />
+              <span className="type-body-sm" style={{ color: isChecked ? "var(--color-ink)" : "var(--color-body)" }}>
+                {opt.label}
+              </span>
+            </label>
+          );
+        })}
       </div>
     </Card>
   );

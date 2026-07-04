@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface CareerResult {
     id: string;
@@ -52,224 +51,275 @@ export function QuizHistorySection({ quizzes: initialQuizzes }: { quizzes: QuizE
         }
     }
 
-    const itemVariants = {
-        hidden: { opacity: 0, y: 10 },
-        visible: (i: number) => ({
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.3, delay: i * 0.05, ease: [0.21, 0.47, 0.32, 0.98] },
-        }),
-    };
-
     return (
         <>
-            <motion.div
-                layout
-                className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-soft)] overflow-hidden"
-                whileHover={{ y: -2, boxShadow: "var(--shadow-md)" }}
+            <div
+                style={{
+                    background: "var(--color-surface-card)",
+                    border: "1px solid var(--color-hairline)",
+                    borderRadius: "0px",
+                    overflow: "hidden",
+                }}
             >
                 {/* Parent header */}
                 <button
-                    className="w-full text-left p-5 flex items-center gap-3 hover:bg-[var(--color-primary-50)] transition-colors"
+                    style={{
+                        width: "100%",
+                        textAlign: "left",
+                        padding: "20px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "16px",
+                        background: "transparent",
+                        border: "none",
+                        cursor: "pointer",
+                    }}
                     onClick={() => setListOpen((o) => !o)}
                     aria-expanded={listOpen}
                 >
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600">
-                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <div
+                        style={{
+                          display: "flex",
+                          height: "36px",
+                          width: "36px",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          border: "1px solid var(--color-hairline-strong)",
+                          color: "var(--color-ink)",
+                          flexShrink: 0,
+                        }}
+                    >
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-[var(--color-text)]">Career Quiz</p>
-                        <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                        <p className="type-title-md" style={{ color: "var(--color-ink)", margin: 0 }}>CAREER QUIZ</p>
+                        <p className="type-body-sm" style={{ color: "var(--color-muted)", marginTop: "4px", margin: 0 }}>
                             {quizzes.length} {quizzes.length === 1 ? "attempt" : "attempts"} taken
                         </p>
                     </div>
-                    <motion.svg
-                        animate={{ rotate: listOpen ? 180 : 0 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                        className="h-4 w-4 shrink-0 text-[var(--color-text-muted)]"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    <svg
+                      style={{
+                        width: "12px",
+                        height: "8px",
+                        color: "var(--color-muted)",
+                        flexShrink: 0,
+                        transition: "transform 0.25s",
+                        transform: listOpen ? "rotate(180deg)" : "none",
+                      }}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 10 6"
                     >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                    </motion.svg>
+                      <path d="M1 1l4 4 4-4" strokeWidth="1.5" />
+                    </svg>
                 </button>
 
                 {/* Inner list */}
-                <AnimatePresence>
-                    {listOpen && (
-                        <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}
-                            className="overflow-hidden"
-                        >
-                            <div className="border-t border-[var(--color-border)] px-4 pb-4 pt-3 space-y-2 bg-[var(--color-background)]/40">
-                                {quizzes.length === 0 ? (
-                                    <p className="py-6 text-center text-sm text-[var(--color-text-muted)]">
-                                        No quiz attempts yet.{" "}
-                                        <Link href="/career-quiz" className="font-medium text-[var(--color-primary-600)] hover:underline">
-                                            Take the career quiz →
-                                        </Link>
-                                    </p>
-                                ) : (
-                                    <AnimatePresence mode="popLayout" initial={false}>
-                                        {quizzes.map((quiz, index) => {
-                                            let results: CareerResult[] = [];
-                                            try { if (quiz.results) results = JSON.parse(quiz.results) as CareerResult[]; } catch { results = []; }
-                                            let phase1: { question: string; answer: string }[] = [];
-                                            try { phase1 = JSON.parse(quiz.phase1Answers) as { question: string; answer: string }[]; } catch { phase1 = []; }
+                {listOpen && (
+                    <div style={{ borderTop: "1px solid var(--color-hairline)", padding: "16px", background: "var(--color-canvas)", display: "flex", flexDirection: "column", gap: "12px" }}>
+                        {quizzes.length === 0 ? (
+                            <p className="type-body-sm" style={{ padding: "24px 0", textAlign: "center", color: "var(--color-muted)", margin: 0 }}>
+                                No quiz attempts yet.{" "}
+                                <Link href="/career-quiz" className="type-caption" style={{ color: "var(--color-link)", textDecoration: "none" }}>
+                                    TAKE THE CAREER QUIZ →
+                                </Link>
+                            </p>
+                        ) : (
+                            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                                {quizzes.map((quiz) => {
+                                    let results: CareerResult[] = [];
+                                    try { if (quiz.results) results = JSON.parse(quiz.results) as CareerResult[]; } catch { results = []; }
+                                    let phase1: { question: string; answer: string }[] = [];
+                                    try { phase1 = JSON.parse(quiz.phase1Answers) as { question: string; answer: string }[]; } catch { phase1 = []; }
 
-                                            const isOpen = expanded === quiz.id;
-                                            const topMatch = results[0];
-                                            const hasResults = results.length > 0;
-                                            const isDeleting = deleting === quiz.id;
+                                    const isOpen = expanded === quiz.id;
+                                    const topMatch = results[0];
+                                    const hasResults = results.length > 0;
+                                    const isDeleting = deleting === quiz.id;
 
-                                            return (
-                                                <motion.div
-                                                    key={quiz.id}
-                                                    layout
-                                                    custom={index}
-                                                    variants={itemVariants}
-                                                    initial="hidden"
-                                                    animate="visible"
-                                                    exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
-                                                    className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden"
+                                    return (
+                                        <div
+                                            key={quiz.id}
+                                            style={{
+                                                background: "var(--color-surface-card)",
+                                                border: "1px solid var(--color-hairline)",
+                                                borderRadius: "0px",
+                                                overflow: "hidden",
+                                            }}
+                                        >
+                                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingRight: "12px" }}>
+                                                <button
+                                                    style={{
+                                                        flex: 1,
+                                                        textAlign: "left",
+                                                        padding: "16px",
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        gap: "16px",
+                                                        background: "transparent",
+                                                        border: "none",
+                                                        cursor: "pointer",
+                                                    }}
+                                                    onClick={() => setExpanded(isOpen ? null : quiz.id)}
+                                                    aria-expanded={isOpen}
                                                 >
-                                                    <div className="flex items-center gap-2 pr-2">
-                                                        <button
-                                                            className="flex-1 text-left px-4 py-3 flex items-center gap-3 hover:bg-[var(--color-primary-50)] transition-colors"
-                                                            onClick={() => setExpanded(isOpen ? null : quiz.id)}
-                                                            aria-expanded={isOpen}
-                                                        >
-                                                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-emerald-100 text-emerald-600">
-                                                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                                </svg>
-                                                            </div>
-                                                            <div className="flex-1 min-w-0">
-                                                                <p className="text-sm font-semibold text-[var(--color-text)] truncate">
-                                                                    {topMatch ? `Top match: ${topMatch.title}` : "Quiz in progress"}
-                                                                </p>
-                                                                <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-                                                                    {hasResults ? `${results.length} career matches` : "No results yet"} · {new Date(quiz.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                                                                </p>
-                                                            </div>
-                                                            {topMatch && (
-                                                                <Badge variant="success" size="sm" className="shrink-0">
-                                                                    {topMatch.matchScore}%
-                                                                </Badge>
-                                                            )}
-                                                            <motion.svg
-                                                                animate={{ rotate: isOpen ? 180 : 0 }}
-                                                                transition={{ duration: 0.25 }}
-                                                                className="h-3.5 w-3.5 shrink-0 text-[var(--color-text-muted)]"
-                                                                fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                                            >
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                                                            </motion.svg>
-                                                        </button>
-                                                        <button
-                                                            onClick={() => setConfirmDeleteId(quiz.id)}
-                                                            disabled={isDeleting}
-                                                            title="Delete"
-                                                            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors disabled:opacity-50"
-                                                        >
-                                                            {isDeleting ? (
-                                                                <svg className="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
-                                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                                                                </svg>
-                                                            ) : (
-                                                                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                                </svg>
-                                                            )}
-                                                        </button>
+                                                    <div
+                                                        style={{
+                                                          display: "flex",
+                                                          height: "28px",
+                                                          width: "28px",
+                                                          alignItems: "center",
+                                                          justifyContent: "center",
+                                                          border: "1px solid var(--color-hairline-strong)",
+                                                          color: "var(--color-ink)",
+                                                          flexShrink: 0,
+                                                        }}
+                                                    >
+                                                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
                                                     </div>
+                                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                                        <p className="type-title-sm" style={{ color: "var(--color-ink)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                                            {topMatch ? `TOP MATCH: ${topMatch.title.toUpperCase()}` : "QUIZ IN PROGRESS"}
+                                                        </p>
+                                                        <p className="type-body-sm" style={{ color: "var(--color-muted)", marginTop: "4px", margin: 0 }}>
+                                                            {hasResults ? `${results.length} CAREER MATCHES` : "NO RESULTS YET"} · {new Date(quiz.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }).toUpperCase()}
+                                                        </p>
+                                                    </div>
+                                                    {topMatch && (
+                                                        <Badge variant="success" size="sm" style={{ flexShrink: 0 }}>
+                                                            {topMatch.matchScore}%
+                                                        </Badge>
+                                                    )}
+                                                    <svg
+                                                      style={{
+                                                        width: "10px",
+                                                        height: "6px",
+                                                        color: "var(--color-muted)",
+                                                        flexShrink: 0,
+                                                        transition: "transform 0.25s",
+                                                        transform: isOpen ? "rotate(180deg)" : "none",
+                                                      }}
+                                                      fill="none"
+                                                      stroke="currentColor"
+                                                      viewBox="0 0 10 6"
+                                                    >
+                                                      <path d="M1 1l4 4 4-4" strokeWidth="1.5" />
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    onClick={() => setConfirmDeleteId(quiz.id)}
+                                                    disabled={isDeleting}
+                                                    title="Delete"
+                                                    style={{
+                                                        display: "flex",
+                                                        height: "32px",
+                                                        width: "32px",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                        background: "transparent",
+                                                        border: "none",
+                                                        color: "var(--color-muted)",
+                                                        cursor: "pointer",
+                                                    }}
+                                                    onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-error)")}
+                                                    onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-muted)")}
+                                                >
+                                                    {isDeleting ? (
+                                                        <svg style={{ animation: "spin 1s linear infinite", width: "14px", height: "14px" }} fill="none" viewBox="0 0 24 24">
+                                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                                                        </svg>
+                                                    ) : (
+                                                        <span style={{ fontSize: "20px", lineHeight: "1" }}>&times;</span>
+                                                    )}
+                                                </button>
+                                            </div>
 
-                                                    {/* Expanded details */}
-                                                    <AnimatePresence>
-                                                        {isOpen && (
-                                                            <motion.div
-                                                                initial={{ height: 0, opacity: 0 }}
-                                                                animate={{ height: "auto", opacity: 1 }}
-                                                                exit={{ height: 0, opacity: 0 }}
-                                                                transition={{ duration: 0.35, ease: [0.21, 0.47, 0.32, 0.98] }}
-                                                                className="overflow-hidden"
-                                                            >
-                                                                <div className="border-t border-[var(--color-border)] px-5 pb-5 pt-4 space-y-5 bg-[var(--color-background)]/50">
-                                                                    {phase1.length > 0 && (
-                                                                        <div>
-                                                                            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mb-2">Your Profile</p>
-                                                                            <div className="flex flex-wrap gap-2">
-                                                                                {phase1.map((a, i) => (
-                                                                                    <motion.span
-                                                                                        key={i}
-                                                                                        initial={{ opacity: 0, scale: 0.9 }}
-                                                                                        animate={{ opacity: 1, scale: 1 }}
-                                                                                        transition={{ delay: i * 0.03 }}
-                                                                                        className="rounded-full border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-1 text-xs text-[var(--color-text-muted)]"
-                                                                                    >
-                                                                                        {a.answer}
-                                                                                    </motion.span>
+                                            {/* Expanded details */}
+                                            {isOpen && (
+                                                <div style={{ borderTop: "1px solid var(--color-hairline)", padding: "16px", background: "var(--color-surface-soft)", display: "flex", flexDirection: "column", gap: "20px" }}>
+                                                    {phase1.length > 0 && (
+                                                        <div>
+                                                            <p className="type-caption" style={{ color: "var(--color-muted-soft)", fontSize: "10px", marginBottom: "8px", textTransform: "uppercase" }}>YOUR PROFILE</p>
+                                                            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                                                                {phase1.map((a, i) => (
+                                                                    <Badge key={i} variant="secondary" size="sm">
+                                                                        {a.answer.toUpperCase()}
+                                                                    </Badge>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    
+                                                    {hasResults && (
+                                                        <div>
+                                                            <p className="type-caption" style={{ color: "var(--color-muted-soft)", fontSize: "10px", marginBottom: "12px", textTransform: "uppercase" }}>CAREER MATCHES</p>
+                                                            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                                                                {results.map((career, i) => (
+                                                                    <div
+                                                                        key={career.id || i}
+                                                                        style={{ display: "flex", gap: "16px" }}
+                                                                    >
+                                                                        <div
+                                                                            style={{
+                                                                                display: "flex",
+                                                                                height: "24px",
+                                                                                width: "24px",
+                                                                                alignItems: "center",
+                                                                                justifyContent: "center",
+                                                                                border: "1px solid var(--color-hairline-strong)",
+                                                                                color: "var(--color-muted)",
+                                                                                fontFamily: "var(--font-mono)",
+                                                                                fontSize: "11px",
+                                                                                flexShrink: 0,
+                                                                            }}
+                                                                        >
+                                                                            {String(i + 1).padStart(2, "0")}
+                                                                        </div>
+                                                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                                                            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px" }}>
+                                                                                <p className="type-title-sm" style={{ color: "var(--color-ink)", margin: 0 }}>{career.title.toUpperCase()}</p>
+                                                                                <Badge variant="success" size="sm">{career.matchScore}%</Badge>
+                                                                            </div>
+                                                                            <p className="type-body-sm" style={{ color: "var(--color-muted)", marginTop: "4px", margin: 0, lineHeight: 1.5 }}>{career.summary}</p>
+                                                                            <div style={{ marginTop: "8px", display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                                                                                <Badge variant="default" size="sm">{formatSalary(career.salaryMin, career.salaryMax)}</Badge>
+                                                                                <Badge variant="secondary" size="sm">{career.education.toUpperCase()}</Badge>
+                                                                                {career.skills.slice(0, 3).map((s) => (
+                                                                                    <Badge key={s} variant="default" size="sm">{s.toUpperCase()}</Badge>
                                                                                 ))}
                                                                             </div>
                                                                         </div>
-                                                                    )}
-                                                                    {hasResults && (
-                                                                        <div>
-                                                                            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mb-3">Career Matches</p>
-                                                                            <div className="space-y-3">
-                                                                                {results.map((career, i) => (
-                                                                                    <motion.div
-                                                                                        key={career.id || i}
-                                                                                        initial={{ opacity: 0, x: -10 }}
-                                                                                        animate={{ opacity: 1, x: 0 }}
-                                                                                        transition={{ delay: i * 0.05 }}
-                                                                                        className="flex items-start gap-3"
-                                                                                    >
-                                                                                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary-600)] text-xs font-bold text-white mt-0.5">{i + 1}</div>
-                                                                                        <div className="flex-1 min-w-0">
-                                                                                            <div className="flex flex-wrap items-center gap-2">
-                                                                                                <p className="text-sm font-semibold text-[var(--color-text)]">{career.title}</p>
-                                                                                                <Badge variant="success" size="sm">{career.matchScore}%</Badge>
-                                                                                            </div>
-                                                                                            <p className="mt-0.5 text-sm text-[var(--color-text-muted)]">{career.summary}</p>
-                                                                                            <div className="mt-2 flex flex-wrap gap-2">
-                                                                                                <span className="rounded border border-[var(--color-border)] px-2 py-0.5 text-xs text-[var(--color-text-muted)]">{formatSalary(career.salaryMin, career.salaryMax)}</span>
-                                                                                                <span className="rounded border border-[var(--color-border)] px-2 py-0.5 text-xs text-[var(--color-text-muted)]">{career.education}</span>
-                                                                                                {career.skills.slice(0, 3).map((s) => (
-                                                                                                    <span key={s} className="rounded border border-[var(--color-border)] px-2 py-0.5 text-xs text-[var(--color-text-muted)]">{s}</span>
-                                                                                                ))}
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </motion.div>
-                                                                                ))}
-                                                                            </div>
-                                                                        </div>
-                                                                    )}
-                                                                    <div className="pt-2 border-t border-[var(--color-border)]">
-                                                                        <Link href="/career-quiz" className="text-sm font-medium text-[var(--color-primary-600)] hover:underline">Retake career quiz →</Link>
                                                                     </div>
-                                                                </div>
-                                                            </motion.div>
-                                                        )}
-                                                    </AnimatePresence>
-                                                </motion.div>
-                                            );
-                                        })}
-                                    </AnimatePresence>
-                                )}
-                                <div className="pt-1 text-right">
-                                    <Link href="/career-quiz" className="text-xs font-medium text-[var(--color-primary-600)] hover:underline">Take a new quiz →</Link>
-                                </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    
+                                                    <div style={{ paddingTop: "12px", borderTop: "1px solid var(--color-hairline)" }}>
+                                                        <Link href="/career-quiz" className="type-caption" style={{ color: "var(--color-link)", textDecoration: "none" }}>
+                                                            RETAKE CAREER QUIZ →
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
                             </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </motion.div>
+                        )}
+                        <div style={{ paddingTop: "8px", textAlign: "right" }}>
+                            <Link href="/career-quiz" className="type-caption" style={{ color: "var(--color-link)", textDecoration: "none" }}>
+                                TAKE A NEW QUIZ →
+                            </Link>
+                        </div>
+                    </div>
+                )}
+            </div>
 
             <ConfirmModal
                 open={!!confirmDeleteId}

@@ -133,33 +133,37 @@ export default function AIRoadmapPage() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <Card padding="lg" className="mx-auto max-w-2xl border-2 border-[var(--color-border)] bg-gradient-to-b from-[var(--color-surface)] to-[var(--color-background)] shadow-[var(--shadow-lg)]">
-              <div className="mb-6 flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--color-primary-500)] to-[var(--color-secondary-500)] text-white shadow-lg">
+            <Card padding="lg" style={{ maxWidth: "640px", margin: "0 auto" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "32px" }}>
+                <div style={{ display: "flex", h: "48px", w: "48px", shrink: 0, alignItems: "center", justifyContent: "center", border: "1px solid var(--color-hairline-strong)", color: "var(--color-ink)" }}>
                   <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                   </svg>
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-[var(--color-text)]">
+                  <h2 className="type-title-md" style={{ color: "var(--color-ink)", margin: 0 }}>
                     Tell us about your goal
                   </h2>
-                  <p className="text-sm text-[var(--color-text-muted)]">
+                  <p className="type-body-sm" style={{ color: "var(--color-muted)", margin: "4px 0 0" }}>
                     We'll use AI to build a detailed roadmap tailored to you.
                   </p>
                 </div>
               </div>
               {error && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  className="mb-4 rounded-lg border border-[var(--color-error)] bg-red-50 p-3 text-sm text-red-800"
+                <div
+                  style={{
+                    marginBottom: "24px",
+                    padding: "12px 16px",
+                    border: "1px solid var(--color-error)",
+                  }}
                   role="alert"
                 >
-                  {error}
-                </motion.div>
+                  <p className="type-caption" style={{ color: "var(--color-error)", margin: 0 }}>
+                    {error.toUpperCase()}
+                  </p>
+                </div>
               )}
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
                 <Input
                   label="Career goal"
                   placeholder="e.g. Become a software engineer, Get into data analytics, Switch to product management"
@@ -193,7 +197,7 @@ export default function AIRoadmapPage() {
                   onChange={(e) => setAnswers((a) => ({ ...a, interests: e.target.value }))}
                   rows={2}
                 />
-                <Button type="submit" variant="primary" fullWidth>
+                <Button type="submit" variant="primary" fullWidth style={{ marginTop: "12px" }}>
                   Generate my roadmap
                 </Button>
               </form>
@@ -208,41 +212,28 @@ export default function AIRoadmapPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <Card padding="lg" className="relative mx-auto max-w-md overflow-hidden text-center">
-              <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary-50)]/50 to-[var(--color-secondary-50)]/50 pointer-events-none" aria-hidden />
-              <div className="relative z-10">
-                <div className="flex justify-center">
-                  <div className="relative">
-                    <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[var(--color-primary-500)] to-[var(--color-secondary-500)] opacity-20 animate-pulse" />
-                    <svg
-                      className="absolute inset-0 m-auto h-10 w-10 animate-spin text-[var(--color-primary-600)]"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      aria-hidden
-                    >
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                  </div>
-                </div>
-                <p className="mt-6 font-semibold text-[var(--color-text)]">
-                  Generating your roadmap...
-                </p>
-                <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-                  This usually takes 10–30 seconds.
-                </p>
-                <div className="mt-6 flex justify-center gap-1.5">
-                  {[0, 1, 2].map((i) => (
-                    <motion.span
-                      key={i}
-                      className="h-2 w-2 rounded-full bg-[var(--color-primary-400)]"
-                      animate={{ y: [0, -8, 0] }}
-                      transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }}
-                    />
-                  ))}
+            <Card padding="lg" style={{ maxWidth: "420px", margin: "40px auto", textAlign: "center" }}>
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: "24px" }}>
+                <div style={{ position: "relative", width: "48px", height: "48px" }}>
+                  <svg
+                    style={{ animation: "spin 1s linear infinite", color: "var(--color-ink)", width: "100%", height: "100%" }}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    aria-hidden
+                  >
+                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
                 </div>
               </div>
+              <p className="type-caption" style={{ color: "var(--color-ink)", margin: 0 }}>
+                GENERATING YOUR ROADMAP...
+              </p>
+              <p className="type-body-sm" style={{ color: "var(--color-muted)", marginTop: "8px", marginBottom: 0 }}>
+                This usually takes 10–30 seconds.
+              </p>
             </Card>
           </motion.div>
         )}
@@ -255,23 +246,23 @@ export default function AIRoadmapPage() {
             transition={{ duration: 0.4 }}
           >
             {/* Progress hero */}
-            <div className="mb-10 rounded-2xl border border-[var(--color-border)] bg-gradient-to-r from-[var(--color-primary-50)] via-[var(--color-surface)] to-[var(--color-secondary-50)] p-6 shadow-[var(--shadow-soft)]">
-              <div className="flex flex-wrap items-center justify-between gap-6">
-                <div className="flex items-center gap-6">
-                  <div className="relative h-20 w-20 shrink-0">
+            <Card padding="md" style={{ marginBottom: "40px" }}>
+              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "24px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+                  <div style={{ position: "relative", width: "80px", height: "80px", flexShrink: 0 }}>
                     <svg className="h-20 w-20 -rotate-90" viewBox="0 0 36 36" aria-hidden>
                       <path
                         className="text-[var(--color-border)]"
                         stroke="currentColor"
-                        strokeWidth="2.5"
+                        strokeWidth="1.5"
                         fill="none"
                         d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                       />
                       <motion.path
-                        className="roadmap-progress-ring text-[var(--color-primary-500)]"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
+                        className="roadmap-progress-ring"
+                        stroke="var(--color-ink)"
+                        strokeWidth="1.5"
+                        strokeLinecap="square"
                         fill="none"
                         strokeDasharray="100"
                         d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
@@ -280,57 +271,91 @@ export default function AIRoadmapPage() {
                         transition={{ duration: 1, ease: "easeOut" }}
                       />
                     </svg>
-                    <span className="absolute inset-0 flex items-center justify-center text-lg font-bold text-[var(--color-primary-600)]">
+                    <span className="type-caption" style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-ink)", fontSize: "14px" }}>
                       {progressPct}%
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-[var(--color-text)]">
-                      Your progress
+                    <h3 className="type-title-md" style={{ color: "var(--color-ink)", margin: 0 }}>
+                      YOUR PROGRESS
                     </h3>
-                    <p className="text-sm text-[var(--color-text-muted)]">
+                    <p className="type-body-sm" style={{ color: "var(--color-muted)", margin: "4px 0 0" }}>
                       {completedCount} of {stages.length} stages · {completedActions} of {totalActions} actions done
                     </p>
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
                   <Button variant="outline" size="sm" onClick={startOver}>
                     Start over
                   </Button>
-                  <Link
-                    href="/career-quiz"
-                    className="inline-flex items-center justify-center rounded-lg border-2 border-[var(--color-primary-600)] bg-transparent px-4 py-2 text-sm font-medium text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)]"
-                  >
-                    Update from quiz →
+                  <Link href="/career-quiz" className="btn-bugatti" style={{ height: "36px", padding: "0 20px", fontSize: "11px" }}>
+                    UPDATE FROM QUIZ →
                   </Link>
                 </div>
               </div>
-            </div>
+            </Card>
 
             {/* Timeline */}
-            <div className="relative">
-              <div className="absolute left-8 top-6 bottom-6 w-0.5 rounded-full roadmap-timeline-line md:left-10" aria-hidden />
-              <ul className="space-y-8">
+            <div style={{ position: "relative" }}>
+              <div
+                style={{
+                  position: "absolute",
+                  left: "24px",
+                  top: "24px",
+                  bottom: "24px",
+                  width: "1px",
+                  background: "var(--color-hairline)",
+                }}
+                aria-hidden
+              />
+              <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "32px", margin: 0, padding: 0 }}>
                 {stages.map((stage, i) => (
                   <motion.li
                     key={stage.id}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className="relative flex gap-6 md:gap-8"
+                    style={{
+                      position: "relative",
+                      display: "flex",
+                      gap: "24px",
+                    }}
                   >
                     <div
-                      className={`roadmap-node relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-2 border-[var(--color-surface)] bg-gradient-to-br from-[var(--color-primary-400)] to-[var(--color-primary-600)] text-lg font-bold text-white ${stage.status === "completed" ? "completed" : stage.status === "in_progress" ? "in-progress" : ""}`}
+                      style={{
+                        position: "relative",
+                        zIndex: 10,
+                        display: "flex",
+                        height: "48px",
+                        width: "48px",
+                        flexShrink: 0,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "var(--color-canvas)",
+                        border: `1px solid ${
+                          stage.status === "completed"
+                            ? "var(--color-success)"
+                            : stage.status === "in_progress"
+                            ? "var(--color-ink)"
+                            : "var(--color-hairline-strong)"
+                        }`,
+                        color:
+                          stage.status === "completed"
+                            ? "var(--color-success)"
+                            : "var(--color-ink)",
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "13px",
+                      }}
                     >
                       {stage.status === "completed" ? (
-                        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                         </svg>
                       ) : (
-                        i + 1
+                        String(i + 1).padStart(2, "0")
                       )}
                     </div>
-                    <div className="min-w-0 flex-1 pb-2">
+                    <div style={{ flex: 1, minWidth: 0 }}>
                       <RoadmapStepCard
                         stage={stage}
                         stepIndex={i}

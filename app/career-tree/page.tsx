@@ -20,6 +20,7 @@ import "@xyflow/react/dist/style.css";
 import { PageShell } from "@/components/layout/PageShell";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/Select";
@@ -87,28 +88,44 @@ const RootNode = ({ data }: { data: { title: string; description: string; skills
   const { theme } = useTheme();
   const isDark = theme === "dark";
   return (
-    <div className="node-root group">
-      <Handle type="source" position={Position.Bottom} className="!opacity-0" />
-      <div className="relative z-10 flex flex-col items-center">
-        <div className={`mb-4 flex h-16 w-16 items-center justify-center rounded-2xl backdrop-blur-md shadow-inner group-hover:scale-110 transition-transform duration-500 ${isDark ? "bg-white/10 ring-1 ring-white/20" : "bg-[var(--color-primary-50)] ring-1 ring-[var(--color-primary-200)]"
-          }`}>
-          <svg className={`h-9 w-9 ${isDark ? "text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]" : "text-[var(--color-primary-500)]"
-            }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+    <div
+      style={{
+        background: "var(--color-surface-card)",
+        border: "1px solid var(--color-hairline-strong)",
+        borderRadius: "0px",
+        padding: "20px",
+        width: "280px",
+        textAlign: "center",
+      }}
+    >
+      <Handle type="source" position={Position.Bottom} style={{ opacity: 0 }} />
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div
+          style={{
+            marginBottom: "16px",
+            display: "flex",
+            height: "48px",
+            width: "48px",
+            alignItems: "center",
+            justifyContent: "center",
+            border: "1px solid var(--color-hairline-strong)",
+            background: "var(--color-surface-soft)",
+            color: "var(--color-ink)",
+          }}
+        >
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
         </div>
-        <h3 className={`text-xl font-black tracking-tight uppercase ${isDark ? "text-white" : "text-gray-800"}`}>{data.title}</h3>
-        <p className={`mt-3 text-[10px] leading-relaxed font-bold uppercase tracking-widest ${isDark ? "text-white/70" : "text-gray-500"}`}>
-          Starting Point
+        <h3 className="type-title-md" style={{ color: "var(--color-ink)", margin: 0 }}>{data.title.toUpperCase()}</h3>
+        <p className="type-caption" style={{ color: "var(--color-muted-soft)", marginTop: "4px", margin: 0, fontSize: "10px" }}>
+          STARTING POINT
         </p>
-        <div className="mt-5 flex flex-wrap justify-center gap-1.5">
+        <div style={{ marginTop: "16px", display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "6px" }}>
           {data.skills.map((s, i) => (
-            <span key={i} className={`rounded-md border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest backdrop-blur-md ${isDark
-              ? "border-white/10 bg-white/10 text-white/90"
-              : "border-black/10 bg-black/5 text-gray-700"
-              }`}>
-              {s}
-            </span>
+            <Badge key={i} variant="secondary" size="sm">
+              {s.toUpperCase()}
+            </Badge>
           ))}
         </div>
       </div>
@@ -117,45 +134,53 @@ const RootNode = ({ data }: { data: { title: string; description: string; skills
 };
 
 const MilestoneNode = ({ data }: { data: Milestone & { color: string; onShowDetails: (m: Milestone) => void } }) => {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
   return (
     <div
-      className="node-milestone group cursor-pointer"
-      style={{ borderColor: `${data.color}40` }}
+      style={{
+        background: "var(--color-surface-card)",
+        border: `1px solid ${data.color || "var(--color-hairline)"}`,
+        borderRadius: "0px",
+        padding: "16px",
+        width: "240px",
+        cursor: "pointer",
+        textAlign: "center",
+      }}
       onClick={() => data.onShowDetails(data)}
     >
-      <Handle type="target" position={Position.Top} className="!opacity-0" />
-      <Handle type="source" position={Position.Bottom} className="!opacity-0" />
+      <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
+      <Handle type="source" position={Position.Bottom} style={{ opacity: 0 }} />
 
-      <div className="flex flex-col items-center">
-        <div
-          className="node-milestone-time"
-          style={{ color: data.color, background: `${data.color}15`, border: `1px solid ${data.color}30` }}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+        <span
+          className="type-caption"
+          style={{
+            border: `1px solid ${data.color || "var(--color-hairline)"}`,
+            padding: "4px 10px",
+            color: data.color || "var(--color-ink)",
+            fontSize: "10px",
+            fontFamily: "var(--font-mono)",
+            background: "transparent",
+          }}
         >
-          {data.timeframe}
-        </div>
-        <div className={`node-milestone-header text-center transition-colors ${isDark ? "group-hover:text-white" : "group-hover:text-[var(--color-primary-600)]"
-          }`}>
-          {data.title}
+          {data.timeframe.toUpperCase()}
+        </span>
+        <div className="type-title-sm" style={{ color: "var(--color-ink)", margin: 0 }}>
+          {data.title.toUpperCase()}
         </div>
 
-        <div className="mt-3 flex flex-wrap gap-1 justify-center opacity-60 group-hover:opacity-100 transition-opacity">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", justifyContent: "center" }}>
           {data.skills.slice(0, 2).map((s, i) => (
-            <span key={i} className="node-milestone-badge">
-              {s}
-            </span>
+            <Badge key={i} variant="default" size="sm">
+              {s.toUpperCase()}
+            </Badge>
           ))}
           {data.skills.length > 2 && (
-            <span className="node-milestone-badge">+{data.skills.length - 2}</span>
+            <Badge variant="secondary" size="sm">+{data.skills.length - 2}</Badge>
           )}
         </div>
 
-        <div className="mt-4 flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-[var(--color-primary-400)] opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
-          View Details
-          <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
+        <div className="type-caption" style={{ color: "var(--color-link)", fontSize: "9px", marginTop: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
+          VIEW DETAILS →
         </div>
       </div>
     </div>
@@ -171,31 +196,33 @@ const nodeTypes = {
 
 function StepIndicator({ step, total }: { step: number; total: number }) {
   return (
-    <div className="flex items-center justify-center gap-2 mb-6">
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginBottom: "32px" }}>
       {Array.from({ length: total }).map((_, i) => (
-        <div key={i} className="flex items-center gap-2">
+        <div key={i} style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <div
-            className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${i + 1 < step
-              ? "bg-[var(--color-primary-600)] text-white shadow-md"
-              : i + 1 === step
-                ? "bg-gradient-to-br from-[var(--color-primary-500)] to-[var(--color-secondary-500)] text-white shadow-lg scale-110"
-                : "bg-[var(--color-border)] text-[var(--color-text-muted)]"
-              }`}
+            style={{
+              height: "32px",
+              width: "32px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              border: (i + 1 <= step) ? "1px solid var(--color-ink)" : "1px solid var(--color-hairline)",
+              background: (i + 1 < step) ? "var(--color-surface-soft)" : "transparent",
+              color: (i + 1 <= step) ? "var(--color-ink)" : "var(--color-muted)",
+              fontFamily: "var(--font-mono)",
+              fontSize: "12px",
+              borderRadius: "0px",
+            }}
           >
-            {i + 1 < step ? (
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-            ) : (
-              i + 1
-            )}
+            {i + 1 < step ? "✓" : String(i + 1).padStart(2, "0")}
           </div>
           {i < total - 1 && (
             <div
-              className={`h-0.5 w-10 rounded-full transition-all duration-500 ${i + 1 < step
-                ? "bg-[var(--color-primary-600)]"
-                : "bg-[var(--color-border)]"
-                }`}
+              style={{
+                height: "1px",
+                width: "40px",
+                background: (i + 1 < step) ? "var(--color-hairline-strong)" : "var(--color-hairline)",
+              }}
             />
           )}
         </div>
@@ -409,24 +436,33 @@ export default function CareerTreePage() {
           >
             <Card
               padding="lg"
-              className="border-2 border-[var(--color-border)] bg-gradient-to-b from-[var(--color-surface)] to-[var(--color-background)] shadow-[var(--shadow-lg)]"
+              className="border border-[var(--color-hairline)] bg-[var(--color-surface-card)]"
             >
               <div className="mb-6 flex items-center gap-4">
                 <motion.div
                   key={step}
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--color-primary-500)] to-[var(--color-secondary-500)] text-white shadow-lg"
+                  style={{
+                    display: "flex",
+                    height: "44px",
+                    width: "44px",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "1px solid var(--color-hairline-strong)",
+                    background: "var(--color-surface-soft)",
+                    color: "var(--color-ink)",
+                  }}
                 >
-                  <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={stepIcons[step - 1]} />
+                  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d={stepIcons[step - 1]} />
                   </svg>
                 </motion.div>
                 <div>
-                  <div className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)]">
-                    Step {step} of {totalSteps}
+                  <div className="type-caption" style={{ color: "var(--color-muted-soft)", fontSize: "10px" }}>
+                    STEP {step} OF {totalSteps}
                   </div>
-                  <h2 className="text-xl font-bold text-[var(--color-text)]">{stepLabels[step - 1]}</h2>
+                  <h2 className="type-title-md" style={{ color: "var(--color-ink)", margin: 0 }}>{stepLabels[step - 1].toUpperCase()}</h2>
                 </div>
               </div>
 
@@ -436,7 +472,14 @@ export default function CareerTreePage() {
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
-                  className="mb-4 rounded-lg border border-[var(--color-error)] bg-red-50 dark:bg-red-950/30 p-3 text-sm text-red-800 dark:text-red-300"
+                  style={{
+                    border: "1px solid var(--color-error)",
+                    background: "transparent",
+                    padding: "12px",
+                    color: "var(--color-error)",
+                    marginBottom: "16px",
+                  }}
+                  className="type-body-md"
                   role="alert"
                 >
                   {error}
@@ -517,10 +560,10 @@ export default function CareerTreePage() {
                 </motion.div>
               </AnimatePresence>
 
-              <div className="mt-8 flex items-center justify-between gap-4">
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", marginTop: "32px" }}>
                 {step > 1 ? (
                   <Button variant="outline" onClick={handleBack}>
-                    ← Back
+                    BACK
                   </Button>
                 ) : (
                   <div />
@@ -532,7 +575,7 @@ export default function CareerTreePage() {
                     onClick={handleNext}
                     disabled={!canProceed()}
                   >
-                    Next step →
+                    NEXT STEP →
                   </Button>
                 ) : (
                   <Button
@@ -540,7 +583,7 @@ export default function CareerTreePage() {
                     onClick={handleGenerate}
                     disabled={!canProceed()}
                   >
-                    Generate My Career Tree
+                    GENERATE CAREER TREE
                   </Button>
                 )}
               </div>
@@ -557,34 +600,30 @@ export default function CareerTreePage() {
             exit={{ opacity: 0 }}
             className="flex flex-col items-center justify-center py-20"
           >
-            <Card padding="lg" className="mx-auto max-w-md text-center bg-transparent border-0 shadow-none">
-              <div className="relative mx-auto h-24 w-24 mb-6">
-                <div className="absolute inset-0 animate-ping rounded-full bg-[var(--color-primary-500)]/20" />
-                <div className="relative flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-[var(--color-primary-500)] to-[var(--color-secondary-500)] shadow-lg shadow-[var(--color-primary-500)]/40">
-                  <svg className="h-12 w-12 animate-pulse text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
-                </div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px", textAlign: "center" }}>
+              <div
+                style={{
+                  display: "flex",
+                  height: "56px",
+                  width: "56px",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: "1px solid var(--color-hairline-strong)",
+                  color: "var(--color-ink)",
+                  animation: "pulse 1.5s infinite ease-in-out",
+                }}
+              >
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
               </div>
-              <p className="font-black text-xl text-[var(--color-text)] uppercase tracking-tighter">
-                Architecting Your Future
+              <p className="type-title-md" style={{ color: "var(--color-ink)", margin: 0 }}>
+                ARCHITECTING YOUR FUTURE
               </p>
-              <p className="mt-2 text-sm text-[var(--color-text-muted)] font-medium">
+              <p className="type-body-sm" style={{ color: "var(--color-muted)", margin: 0 }}>
                 AI is mapping thousands of possibilities into 3 optimal paths...
               </p>
-              <div className="mt-8 flex justify-center gap-1.5">
-                {[0, 1, 2, 3].map((i) => (
-                  <span key={i} className="h-1.5 w-6 rounded-full bg-[var(--color-primary-500)]/20 overflow-hidden">
-                    <motion.div
-                      className="h-full bg-[var(--color-primary-500)]"
-                      initial={{ x: "-100%" }}
-                      animate={{ x: "100%" }}
-                      transition={{ repeat: Infinity, duration: 1.5, delay: i * 0.2 }}
-                    />
-                  </span>
-                ))}
-              </div>
-            </Card>
+            </div>
           </motion.div>
         )}
 
@@ -596,8 +635,8 @@ export default function CareerTreePage() {
             animate={{ opacity: 1, scale: 1 }}
             className={
               isFullscreen
-                ? `fixed inset-0 z-50 ${isDark ? "bg-[#030712]" : "bg-[#f8fafc]"}`
-                : `h-[800px] w-full relative rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl ${isDark ? "bg-[#030712]" : "bg-[#f8fafc]"}`
+                ? `fixed inset-0 z-50 ${isDark ? "bg-[#000000]" : "bg-[#f8fafc]"}`
+                : `h-[800px] w-full relative border border-white/5 overflow-hidden ${isDark ? "bg-[#000000]" : "bg-[#f8fafc]"}`
             }
           >
             <ReactFlow
@@ -611,51 +650,32 @@ export default function CareerTreePage() {
               maxZoom={2}
             >
               <Background color={isDark ? "#1f2937" : "#cbd5e1"} size={1.5} gap={24} variant={"dots" as any} />
-              <Controls className="!rounded-2xl backdrop-blur-xl" />
+              <Controls style={{ borderRadius: "0px", border: "1px solid var(--color-hairline)" }} />
 
               <Panel position="top-right" className="flex gap-2 items-center">
                 {/* Maximize / Minimize toggle */}
                 <button
                   onClick={() => setIsFullscreen((f) => !f)}
                   title={isFullscreen ? "Exit full screen" : "Full screen"}
-                  className={`flex h-8 w-8 items-center justify-center rounded-xl border backdrop-blur-xl transition-colors ${isDark
-                    ? "bg-black/50 border-white/10 text-white hover:bg-white/10"
-                    : "bg-white/80 border-black/10 text-gray-700 hover:bg-white"
-                    }`}
+                  className="btn-bugatti"
+                  style={{ height: "32px", width: "32px", padding: 0, display: "flex", alignItems: "center", justifyContent: "center" }}
                 >
-                  {isFullscreen ? (
-                    /* Minimize icon */
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                        d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5M15 15l5.25 5.25M9 15H4.5M9 15v4.5M9 15l-5.25 5.25" />
-                    </svg>
-                  ) : (
-                    /* Maximize icon */
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                        d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                    </svg>
-                  )}
+                  {isFullscreen ? "[-]" : "[+]"}
                 </button>
-                <Button size="sm" variant="outline" onClick={startOver} className={`!rounded-2xl !backdrop-blur-xl ${isDark ? "!bg-black/50 !border-white/10 text-white" : "!bg-white/80 !border-black/10 text-gray-700"
-                  }`}>
-                  Start Over
+                <Button size="sm" variant="outline" onClick={startOver}>
+                  START OVER
                 </Button>
-                <Button size="sm" variant="primary" onClick={() => window.print()} className="!rounded-2xl shadow-lg shadow-[var(--color-primary-500)]/40">
-                  Export Plan
+                <Button size="sm" variant="primary" onClick={() => window.print()}>
+                  EXPORT PLAN
                 </Button>
               </Panel>
 
-              <Panel position="bottom-left" className={`backdrop-blur-2xl p-6 rounded-[2rem] border max-w-xs shadow-2xl m-6 ${isDark ? "bg-white/5 border-white/10" : "bg-white/80 border-black/10"
-                }`}>
-                <h4 className={`font-black text-xs uppercase tracking-widest mb-3 flex items-center gap-2 ${isDark ? "text-white" : "text-gray-800"
-                  }`}>
-                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                  Navigator
+              <Panel position="bottom-left" style={{ background: "var(--color-surface-card)", border: "1px solid var(--color-hairline)", padding: "20px", maxWidth: "320px", margin: "24px" }}>
+                <h4 className="type-caption" style={{ color: "var(--color-ink)", margin: "0 0 8px", display: "flex", alignItems: "center", gap: "8px" }}>
+                  NAVIGATOR
                 </h4>
-                <p className={`text-[10px] leading-relaxed font-medium ${isDark ? "text-white/50" : "text-gray-500"
-                  }`}>
-                  Welcome to your interactive career architecture. Connect with **Root** to see your foundation, or explore the **Branches** to discover your potential. Click any node for detailed action plans.
+                <p className="type-body-sm" style={{ color: "var(--color-muted)", margin: 0, lineHeight: 1.5 }}>
+                  Welcome to your interactive career architecture. Connect with Root to see your foundation, or explore the Branches to discover your potential. Click any node for detailed action plans.
                 </p>
               </Panel>
             </ReactFlow>
@@ -675,93 +695,106 @@ export default function CareerTreePage() {
 
             {/* ── LEFT: Milestone Details ── */}
             <div className="flex flex-col gap-5">
-              {/* Timeframe pill */}
-              <div className="inline-flex items-center gap-2 self-start rounded-full px-4 py-1.5 text-xs font-bold bg-[var(--color-primary-500)]/10 text-[var(--color-primary-500)] border border-[var(--color-primary-500)]/20">
-                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {selectedMilestone.timeframe}
-              </div>
+              {/* Timeframe Badge */}
+              <Badge variant="primary" size="sm" style={{ alignSelf: "flex-start" }}>
+                {selectedMilestone.timeframe.toUpperCase()}
+              </Badge>
 
               {/* Skills */}
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-muted)] mb-2">Skills to Acquire</p>
-                <div className="flex flex-wrap gap-1.5">
+                <p className="type-caption" style={{ color: "var(--color-muted-soft)", fontSize: "10px", marginBottom: "8px", textTransform: "uppercase" }}>SKILLS TO ACQUIRE</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                   {selectedMilestone.skills.map((skill, i) => (
-                    <span key={i} className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-2.5 py-1 text-xs font-semibold text-[var(--color-text)]">
-                      {skill}
-                    </span>
+                    <Badge key={i} variant="secondary" size="sm">
+                      {skill.toUpperCase()}
+                    </Badge>
                   ))}
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="flex-1">
-                <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 mb-3">Execution Strategy</p>
-                <ul className="space-y-2">
+              <div style={{ flex: 1 }}>
+                <p className="type-caption" style={{ color: "var(--color-muted-soft)", fontSize: "10px", marginBottom: "12px", textTransform: "uppercase" }}>EXECUTION STRATEGY</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                   {selectedMilestone.actions.map((action, i) => (
-                    <li key={i} className="flex items-start gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-3 hover:border-[var(--color-primary-400)]/50 transition-colors">
-                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-[var(--color-primary-500)]/10 text-[10px] font-black text-[var(--color-primary-500)]">
-                        {i + 1}
-                      </span>
-                      <p className="text-sm text-[var(--color-text)] leading-snug">{action}</p>
-                    </li>
+                    <div key={i} style={{ display: "flex", gap: "12px", border: "1px solid var(--color-hairline)", padding: "12px", background: "var(--color-surface-card)" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          height: "20px",
+                          width: "20px",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          border: "1px solid var(--color-hairline-strong)",
+                          color: "var(--color-muted)",
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "10px",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {String(i + 1).padStart(2, "0")}
+                      </div>
+                      <p className="type-body-sm" style={{ color: "var(--color-body)", margin: 0, lineHeight: 1.5 }}>{action}</p>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             </div>
 
             {/* ── RIGHT: Learning Resources ── */}
-            <div className="flex flex-col gap-3">
-              <p className="text-[10px] font-black uppercase tracking-widest text-[var(--color-primary-400)]">Suggested Learning Resources</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <p className="type-caption" style={{ color: "var(--color-muted-soft)", fontSize: "10px", textTransform: "uppercase" }}>SUGGESTED LEARNING RESOURCES</p>
 
               {resourcesLoading ? (
-                <div className="flex flex-1 items-center justify-center gap-2 text-sm text-[var(--color-text-muted)]">
-                  <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <div style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "center", gap: "8px", color: "var(--color-muted)" }} className="type-caption">
+                  <svg style={{ animation: "spin 1s linear infinite", width: "14px", height: "14px" }} fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                   </svg>
-                  Finding resources...
+                  FINDING RESOURCES...
                 </div>
               ) : milestoneResources.length === 0 ? (
-                <p className="text-sm text-[var(--color-text-muted)]">No resources found.</p>
+                <p className="type-body-sm" style={{ color: "var(--color-muted)" }}>No resources found.</p>
               ) : (
                 <>
-                <div className="flex flex-col gap-3">
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   {milestoneResources.map((r) => (
                     <a
                       key={r.id}
                       href={r.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex flex-col gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] p-3.5 hover:border-[var(--color-primary-400)]/60 hover:shadow-md transition-all"
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "8px",
+                        border: "1px solid var(--color-hairline)",
+                        background: "var(--color-surface-card)",
+                        padding: "16px",
+                        textDecoration: "none",
+                      }}
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="rounded-md bg-[var(--color-primary-500)]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--color-primary-500)]">
-                          {r.type}
-                        </span>
-                        <span className="text-[10px] text-[var(--color-text-muted)] truncate max-w-[100px]">{r.source}</span>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <Badge variant="primary" size="sm">
+                          {r.type.toUpperCase()}
+                        </Badge>
+                        <span className="type-caption" style={{ color: "var(--color-muted-soft)", fontSize: "9px" }}>{r.source.toUpperCase()}</span>
                       </div>
-                      <p className="text-xs font-semibold text-[var(--color-text)] line-clamp-2 leading-snug group-hover:text-[var(--color-primary-500)] transition-colors">
-                        {r.title}
+                      <p className="type-title-sm" style={{ color: "var(--color-ink)", margin: 0, lineHeight: 1.4 }}>
+                        {r.title.toUpperCase()}
                       </p>
-                      <span className="mt-auto text-[10px] font-bold text-[var(--color-primary-500)] flex items-center gap-1">
-                        Watch / Read
-                        <svg className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
+                      <span className="type-caption" style={{ color: "var(--color-link)", fontSize: "10px", display: "flex", alignItems: "center", gap: "4px", marginTop: "4px" }}>
+                        EXPLORE RESOURCE →
                       </span>
                     </a>
                   ))}
                 </div>
                 <Link
                   href={"/learning-resources?q=" + encodeURIComponent(selectedMilestone.skills.slice(0, 3).join(" "))}
-                  className="mt-1 flex items-center justify-center gap-1.5 rounded-xl border border-[var(--color-border)] py-2 text-xs font-semibold text-[var(--color-text-muted)] hover:border-[var(--color-primary-400)]/60 hover:text-[var(--color-primary-500)] transition-colors"
+                  className="btn-bugatti"
+                  style={{ height: "36px", fontSize: "11px", textDecoration: "none", textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center" }}
                 >
-                  Show more resources
-                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
+                  SHOW MORE RESOURCES →
                 </Link>
                 </>
               )}

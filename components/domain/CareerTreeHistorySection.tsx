@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import { Badge } from "@/components/ui/Badge";
 
 interface CareerMilestone {
     title: string;
@@ -44,7 +44,7 @@ interface CareerTreeEntry {
 
 export function CareerTreeHistorySection({ trees: initialTrees }: { trees: CareerTreeEntry[] }) {
     const [trees, setTrees] = useState<CareerTreeEntry[]>(initialTrees);
-    const [listOpen, setListOpen] = useState(false);         // top-level parent toggle
+    const [listOpen, setListOpen] = useState(false);
     const [expanded, setExpanded] = useState<string | null>(null);
     const [expandedBranch, setExpandedBranch] = useState<string | null>(null);
     const [deleting, setDeleting] = useState<string | null>(null);
@@ -66,319 +66,341 @@ export function CareerTreeHistorySection({ trees: initialTrees }: { trees: Caree
         }
     }
 
-    const itemVariants = {
-        hidden: { opacity: 0, y: 10 },
-        visible: (i: number) => ({
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.3, delay: i * 0.05, ease: [0.21, 0.47, 0.32, 0.98] },
-        }),
-    };
-
     return (
         <>
-            {/* ── Top-level parent row ── */}
-            <motion.div
-                layout
-                className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-soft)] overflow-hidden"
-                whileHover={{ y: -2, boxShadow: "var(--shadow-md)" }}
+            <div
+                style={{
+                    background: "var(--color-surface-card)",
+                    border: "1px solid var(--color-hairline)",
+                    borderRadius: "0px",
+                    overflow: "hidden",
+                }}
             >
                 {/* Parent header */}
                 <button
-                    className="w-full text-left p-5 flex items-center gap-3 hover:bg-[var(--color-primary-50)] transition-colors"
+                    style={{
+                        width: "100%",
+                        textAlign: "left",
+                        padding: "20px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "16px",
+                        background: "transparent",
+                        border: "none",
+                        cursor: "pointer",
+                    }}
                     onClick={() => setListOpen((o) => !o)}
                     aria-expanded={listOpen}
                 >
-                    {/* Icon */}
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600">
-                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    <div
+                        style={{
+                          display: "flex",
+                          height: "36px",
+                          width: "36px",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          border: "1px solid var(--color-hairline-strong)",
+                          color: "var(--color-ink)",
+                          flexShrink: 0,
+                        }}
+                    >
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
                     </div>
-
-                    {/* Title + meta */}
-                    <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-[var(--color-text)]">Career Trees</p>
-                        <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                        <p className="type-title-md" style={{ color: "var(--color-ink)", margin: 0 }}>CAREER TREES</p>
+                        <p className="type-body-sm" style={{ color: "var(--color-muted)", marginTop: "4px", margin: 0 }}>
                             {trees.length} {trees.length === 1 ? "tree" : "trees"} generated
                         </p>
                     </div>
-
-                    {/* Chevron */}
-                    <motion.svg
-                        animate={{ rotate: listOpen ? 180 : 0 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                        className="h-4 w-4 shrink-0 text-[var(--color-text-muted)]"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    <svg
+                      style={{
+                        width: "12px",
+                        height: "8px",
+                        color: "var(--color-muted)",
+                        flexShrink: 0,
+                        transition: "transform 0.25s",
+                        transform: listOpen ? "rotate(180deg)" : "none",
+                      }}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 10 6"
                     >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                    </motion.svg>
+                      <path d="M1 1l4 4 4-4" strokeWidth="1.5" />
+                    </svg>
                 </button>
 
-                {/* ── Expanded inner list ── */}
-                <AnimatePresence>
-                    {listOpen && (
-                        <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}
-                            className="overflow-hidden"
-                        >
-                            <div className="border-t border-[var(--color-border)] px-4 pb-4 pt-3 space-y-2 bg-[var(--color-background)]/40">
-                                {trees.length === 0 ? (
-                                    <p className="py-6 text-center text-sm text-[var(--color-text-muted)]">
-                                        No career trees yet.{" "}
-                                        <Link href="/career-tree" className="font-medium text-[var(--color-primary-600)] hover:underline">
-                                            Generate your first one →
-                                        </Link>
-                                    </p>
-                                ) : (
-                                    <AnimatePresence mode="popLayout" initial={false}>
-                                        {trees.map((entry, index) => {
-                                            let treeData: CareerTreeData | null = null;
-                                            let formInput: CareerTreeFormInput | null = null;
-                                            try {
-                                                treeData = JSON.parse(entry.treeData) as CareerTreeData;
-                                                formInput = JSON.parse(entry.formInput) as CareerTreeFormInput;
-                                            } catch {
-                                                treeData = null;
-                                            }
+                {/* Inner list */}
+                {listOpen && (
+                    <div style={{ borderTop: "1px solid var(--color-hairline)", padding: "16px", background: "var(--color-canvas)", display: "flex", flexDirection: "column", gap: "12px" }}>
+                        {trees.length === 0 ? (
+                            <p className="type-body-sm" style={{ padding: "24px 0", textAlign: "center", color: "var(--color-muted)", margin: 0 }}>
+                                No career trees yet.{" "}
+                                <Link href="/career-tree" className="type-caption" style={{ color: "var(--color-link)", textDecoration: "none" }}>
+                                    GENERATE YOUR FIRST ONE →
+                                </Link>
+                            </p>
+                        ) : (
+                            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                                {trees.map((entry) => {
+                                    let treeData: CareerTreeData | null = null;
+                                    let formInput: CareerTreeFormInput | null = null;
+                                    try {
+                                        treeData = JSON.parse(entry.treeData) as CareerTreeData;
+                                        formInput = JSON.parse(entry.formInput) as CareerTreeFormInput;
+                                    } catch {
+                                        treeData = null;
+                                    }
 
-                                            const isOpen = expanded === entry.id;
-                                            const branchCount = treeData?.branches.length ?? 0;
-                                            const totalMilestones = treeData?.branches.reduce((acc, b) => acc + b.milestones.length, 0) ?? 0;
-                                            const isDeleting = deleting === entry.id;
+                                    const isOpen = expanded === entry.id;
+                                    const branchCount = treeData?.branches.length ?? 0;
+                                    const totalMilestones = treeData?.branches.reduce((acc, b) => acc + b.milestones.length, 0) ?? 0;
+                                    const isDeleting = deleting === entry.id;
 
-                                            return (
-                                                <motion.div
-                                                    key={entry.id}
-                                                    layout
-                                                    custom={index}
-                                                    variants={itemVariants}
-                                                    initial="hidden"
-                                                    animate="visible"
-                                                    exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
-                                                    className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden"
+                                    return (
+                                        <div
+                                            key={entry.id}
+                                            style={{
+                                                background: "var(--color-surface-card)",
+                                                border: "1px solid var(--color-hairline)",
+                                                borderRadius: "0px",
+                                                overflow: "hidden",
+                                            }}
+                                        >
+                                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingRight: "12px" }}>
+                                                <button
+                                                    style={{
+                                                        flex: 1,
+                                                        textAlign: "left",
+                                                        padding: "16px",
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        gap: "16px",
+                                                        background: "transparent",
+                                                        border: "none",
+                                                        cursor: "pointer",
+                                                    }}
+                                                    onClick={() => setExpanded(isOpen ? null : entry.id)}
+                                                    aria-expanded={isOpen}
                                                 >
-                                                    {/* Item header */}
-                                                    <div className="flex items-center gap-2 pr-2">
-                                                        <button
-                                                            className="flex-1 text-left px-4 py-3 flex items-center gap-3 hover:bg-[var(--color-primary-50)] transition-colors"
-                                                            onClick={() => setExpanded(isOpen ? null : entry.id)}
-                                                            aria-expanded={isOpen}
-                                                        >
-                                                            {/* Icon */}
-                                                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-indigo-100 text-indigo-600">
-                                                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                                                </svg>
-                                                            </div>
-
-                                                            {/* Title + meta */}
-                                                            <div className="flex-1 min-w-0">
-                                                                <p className="text-sm font-semibold text-[var(--color-text)] truncate capitalize">
-                                                                    {entry.rootTitle}
-                                                                </p>
-                                                                <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-                                                                    {branchCount} paths · {totalMilestones} milestones ·{" "}
-                                                                    {new Date(entry.createdAt).toLocaleDateString("en-US", {
-                                                                        month: "short",
-                                                                        day: "numeric",
-                                                                        year: "numeric",
-                                                                    })}
-                                                                </p>
-                                                                {/* Branch pills */}
-                                                                {treeData && (
-                                                                    <div className="mt-1.5 flex flex-wrap gap-1">
-                                                                        {treeData.branches.map((b) => (
-                                                                            <span
-                                                                                key={b.id}
-                                                                                className="inline-block rounded-full px-2 py-0.5 text-xs font-medium"
-                                                                                style={{ backgroundColor: `${b.color}20`, color: b.color, border: `1px solid ${b.color}40` }}
-                                                                            >
-                                                                                {b.title}
-                                                                            </span>
-                                                                        ))}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-
-                                                            {/* Chevron */}
-                                                            <motion.svg
-                                                                animate={{ rotate: isOpen ? 180 : 0 }}
-                                                                transition={{ duration: 0.25 }}
-                                                                className="h-3.5 w-3.5 shrink-0 text-[var(--color-text-muted)]"
-                                                                fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                                            >
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                                                            </motion.svg>
-                                                        </button>
-
-                                                        {/* Delete button */}
-                                                        <button
-                                                            onClick={() => setConfirmDeleteId(entry.id)}
-                                                            disabled={isDeleting}
-                                                            title="Delete"
-                                                            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors disabled:opacity-50"
-                                                        >
-                                                            {isDeleting ? (
-                                                                <svg className="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
-                                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                                                                </svg>
-                                                            ) : (
-                                                                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                                </svg>
-                                                            )}
-                                                        </button>
+                                                    <div
+                                                        style={{
+                                                          display: "flex",
+                                                          height: "28px",
+                                                          width: "28px",
+                                                          alignItems: "center",
+                                                          justifyContent: "center",
+                                                          border: "1px solid var(--color-hairline-strong)",
+                                                          color: "var(--color-ink)",
+                                                          flexShrink: 0,
+                                                        }}
+                                                    >
+                                                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                                        </svg>
                                                     </div>
+                                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                                        <p className="type-title-sm" style={{ color: "var(--color-ink)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                                            {entry.rootTitle.toUpperCase()}
+                                                        </p>
+                                                        <p className="type-body-sm" style={{ color: "var(--color-muted)", marginTop: "4px", margin: 0 }}>
+                                                            {branchCount} PATHS · {totalMilestones} MILESTONES · {new Date(entry.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }).toUpperCase()}
+                                                        </p>
+                                                        {treeData && (
+                                                            <div style={{ marginTop: "8px", display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                                                                {treeData.branches.map((b) => (
+                                                                    <Badge key={b.id} variant="default" size="sm">
+                                                                        {b.title.toUpperCase()}
+                                                                    </Badge>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <svg
+                                                      style={{
+                                                        width: "10px",
+                                                        height: "6px",
+                                                        color: "var(--color-muted)",
+                                                        flexShrink: 0,
+                                                        transition: "transform 0.25s",
+                                                        transform: isOpen ? "rotate(180deg)" : "none",
+                                                      }}
+                                                      fill="none"
+                                                      stroke="currentColor"
+                                                      viewBox="0 0 10 6"
+                                                    >
+                                                      <path d="M1 1l4 4 4-4" strokeWidth="1.5" />
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    onClick={() => setConfirmDeleteId(entry.id)}
+                                                    disabled={isDeleting}
+                                                    title="Delete"
+                                                    style={{
+                                                        display: "flex",
+                                                        height: "32px",
+                                                        width: "32px",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                        background: "transparent",
+                                                        border: "none",
+                                                        color: "var(--color-muted)",
+                                                        cursor: "pointer",
+                                                    }}
+                                                    onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-error)")}
+                                                    onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-muted)")}
+                                                >
+                                                    {isDeleting ? (
+                                                        <svg style={{ animation: "spin 1s linear infinite", width: "14px", height: "14px" }} fill="none" viewBox="0 0 24 24">
+                                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                                                        </svg>
+                                                    ) : (
+                                                        <span style={{ fontSize: "20px", lineHeight: "1" }}>&times;</span>
+                                                    )}
+                                                </button>
+                                            </div>
 
-                                                    {/* Item expanded detail */}
-                                                    <AnimatePresence>
-                                                        {isOpen && treeData && (
-                                                            <motion.div
-                                                                initial={{ height: 0, opacity: 0 }}
-                                                                animate={{ height: "auto", opacity: 1 }}
-                                                                exit={{ height: 0, opacity: 0 }}
-                                                                transition={{ duration: 0.35, ease: [0.21, 0.47, 0.32, 0.98] }}
-                                                                className="overflow-hidden"
-                                                            >
-                                                                <div className="border-t border-[var(--color-border)] px-5 pb-5 pt-4 space-y-4 bg-[var(--color-background)]/50">
-                                                                    {/* Profile pill */}
-                                                                    {formInput && (
-                                                                        <div className="rounded-lg bg-[var(--color-background)] px-4 py-3 text-xs text-[var(--color-text-muted)] space-y-1">
-                                                                            <p><span className="font-semibold text-[var(--color-text)]">Skills:</span> {formInput.skills}</p>
-                                                                            {formInput.currentStage && <p><span className="font-semibold text-[var(--color-text)]">Stage:</span> {formInput.currentStage}</p>}
-                                                                            <p><span className="font-semibold text-[var(--color-text)]">Short-term goal:</span> {formInput.shortTermGoal}</p>
-                                                                            <p><span className="font-semibold text-[var(--color-text)]">Long-term goal:</span> {formInput.longTermGoal}</p>
+                                            {/* Expanded detail */}
+                                            {isOpen && treeData && (
+                                                <div style={{ borderTop: "1px solid var(--color-hairline)", padding: "16px", background: "var(--color-surface-soft)", display: "flex", flexDirection: "column", gap: "16px" }}>
+                                                    {formInput && (
+                                                        <div style={{ border: "1px solid var(--color-hairline)", padding: "12px", background: "var(--color-canvas)", display: "flex", flexDirection: "column", gap: "6px" }}>
+                                                            <p className="type-body-sm" style={{ color: "var(--color-muted)", margin: 0 }}><span className="type-caption" style={{ color: "var(--color-muted-soft)", fontSize: "10px" }}>SKILLS:</span> {formInput.skills}</p>
+                                                            {formInput.currentStage && <p className="type-body-sm" style={{ color: "var(--color-muted)", margin: 0 }}><span className="type-caption" style={{ color: "var(--color-muted-soft)", fontSize: "10px" }}>STAGE:</span> {formInput.currentStage}</p>}
+                                                            <p className="type-body-sm" style={{ color: "var(--color-muted)", margin: 0 }}><span className="type-caption" style={{ color: "var(--color-muted-soft)", fontSize: "10px" }}>SHORT-TERM GOAL:</span> {formInput.shortTermGoal}</p>
+                                                            <p className="type-body-sm" style={{ color: "var(--color-muted)", margin: 0 }}><span className="type-caption" style={{ color: "var(--color-muted-soft)", fontSize: "10px" }}>LONG-TERM GOAL:</span> {formInput.longTermGoal}</p>
+                                                        </div>
+                                                    )}
+
+                                                    <p className="type-body-sm" style={{ color: "var(--color-muted)", margin: 0, lineHeight: 1.5 }}>{treeData.root.description}</p>
+
+                                                    {/* Branches */}
+                                                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                                                        {treeData.branches.map((branch) => {
+                                                            const branchKey = `${entry.id}-${branch.id}`;
+                                                            const isBranchOpen = expandedBranch === branchKey;
+
+                                                            return (
+                                                                <div key={branch.id} style={{ border: "1px solid var(--color-hairline)", background: "var(--color-surface-card)" }}>
+                                                                    <button
+                                                                        style={{
+                                                                            width: "100%",
+                                                                            textAlign: "left",
+                                                                            padding: "12px 16px",
+                                                                            display: "flex",
+                                                                            alignItems: "center",
+                                                                            gap: "12px",
+                                                                            background: "transparent",
+                                                                            border: "none",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                        onClick={() => setExpandedBranch(isBranchOpen ? null : branchKey)}
+                                                                    >
+                                                                        <span style={{ display: "block", height: "8px", width: "8px", background: branch.color || "var(--color-ink)", flexShrink: 0 }} />
+                                                                        <span className="type-title-sm" style={{ flex: 1, color: "var(--color-ink)", margin: 0 }}>{branch.title.toUpperCase()}</span>
+                                                                        <span className="type-caption" style={{ color: "var(--color-muted-soft)", fontSize: "10px" }}>{branch.milestones.length} MILESTONES</span>
+                                                                        <svg
+                                                                          style={{
+                                                                            width: "10px",
+                                                                            height: "6px",
+                                                                            color: "var(--color-muted)",
+                                                                            flexShrink: 0,
+                                                                            transition: "transform 0.25s",
+                                                                            transform: isBranchOpen ? "rotate(180deg)" : "none",
+                                                                          }}
+                                                                          fill="none"
+                                                                          stroke="currentColor"
+                                                                          viewBox="0 0 10 6"
+                                                                        >
+                                                                          <path d="M1 1l4 4 4-4" strokeWidth="1.5" />
+                                                                        </svg>
+                                                                    </button>
+
+                                                                    {isBranchOpen && (
+                                                                        <div style={{ borderTop: "1px solid var(--color-hairline)", padding: "16px", background: "var(--color-canvas)", display: "flex", flexDirection: "column", gap: "16px" }}>
+                                                                            <p className="type-body-sm" style={{ color: "var(--color-muted)", margin: 0, lineHeight: 1.5 }}>{branch.description}</p>
+                                                                            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                                                                                {branch.milestones.map((ms, i) => (
+                                                                                    <div
+                                                                                        key={i}
+                                                                                        style={{ display: "flex", gap: "16px" }}
+                                                                                    >
+                                                                                        <div
+                                                                                            style={{
+                                                                                                display: "flex",
+                                                                                                height: "24px",
+                                                                                                width: "24px",
+                                                                                                alignItems: "center",
+                                                                                                justifyContent: "center",
+                                                                                                border: "1px solid var(--color-hairline-strong)",
+                                                                                                color: "var(--color-muted)",
+                                                                                                fontFamily: "var(--font-mono)",
+                                                                                                fontSize: "11px",
+                                                                                                flexShrink: 0,
+                                                                                            }}
+                                                                                        >
+                                                                                            {String(i + 1).padStart(2, "0")}
+                                                                                        </div>
+                                                                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                                                                            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px" }}>
+                                                                                                <p className="type-title-sm" style={{ color: "var(--color-ink)", margin: 0 }}>{ms.title.toUpperCase()}</p>
+                                                                                                <Badge variant="default" size="sm">
+                                                                                                    {ms.timeframe.toUpperCase()}
+                                                                                                </Badge>
+                                                                                            </div>
+                                                                                            {ms.skills.length > 0 && (
+                                                                                                <div style={{ marginTop: "8px", display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                                                                                                    {ms.skills.map((skill, j) => (
+                                                                                                        <Badge key={j} variant="secondary" size="sm">
+                                                                                                            {skill.toUpperCase()}
+                                                                                                        </Badge>
+                                                                                                    ))}
+                                                                                                </div>
+                                                                                            )}
+                                                                                            {ms.actions.length > 0 && (
+                                                                                                <ul style={{ paddingLeft: "16px", margin: "8px 0 0", display: "flex", flexDirection: "column", gap: "4px" }} className="list-disc">
+                                                                                                    {ms.actions.map((action, j) => (
+                                                                                                        <li key={j} className="type-body-sm" style={{ color: "var(--color-muted-soft)" }}>
+                                                                                                            {action}
+                                                                                                        </li>
+                                                                                                    ))}
+                                                                                                </ul>
+                                                                                            )}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
                                                                         </div>
                                                                     )}
-
-                                                                    {/* Root description */}
-                                                                    <p className="text-sm text-[var(--color-text-muted)]">{treeData.root.description}</p>
-
-                                                                    {/* Branches */}
-                                                                    <div className="space-y-2">
-                                                                        {treeData.branches.map((branch) => {
-                                                                            const branchKey = `${entry.id}-${branch.id}`;
-                                                                            const isBranchOpen = expandedBranch === branchKey;
-
-                                                                            return (
-                                                                                <div key={branch.id} className="rounded-lg border overflow-hidden" style={{ borderColor: `${branch.color}40` }}>
-                                                                                    <button
-                                                                                        className="w-full text-left px-4 py-3 flex items-center gap-2 transition-colors"
-                                                                                        style={{ backgroundColor: `${branch.color}10` }}
-                                                                                        onClick={() => setExpandedBranch(isBranchOpen ? null : branchKey)}
-                                                                                    >
-                                                                                        <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: branch.color }} />
-                                                                                        <span className="flex-1 text-sm font-semibold" style={{ color: branch.color }}>{branch.title}</span>
-                                                                                        <span className="text-xs text-[var(--color-text-muted)]">{branch.milestones.length} milestones</span>
-                                                                                        <motion.svg
-                                                                                            animate={{ rotate: isBranchOpen ? 180 : 0 }}
-                                                                                            className="h-3.5 w-3.5 shrink-0 text-[var(--color-text-muted)]"
-                                                                                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                                                                        >
-                                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                                                                                        </motion.svg>
-                                                                                    </button>
-
-                                                                                    <AnimatePresence>
-                                                                                        {isBranchOpen && (
-                                                                                            <motion.div
-                                                                                                initial={{ height: 0, opacity: 0 }}
-                                                                                                animate={{ height: "auto", opacity: 1 }}
-                                                                                                exit={{ height: 0, opacity: 0 }}
-                                                                                                className="overflow-hidden"
-                                                                                            >
-                                                                                                <div className="px-4 pb-4 pt-3 space-y-4 bg-[var(--color-surface)]">
-                                                                                                    <p className="text-xs text-[var(--color-text-muted)]">{branch.description}</p>
-                                                                                                    <div className="space-y-3">
-                                                                                                        {branch.milestones.map((ms, i) => (
-                                                                                                            <motion.div
-                                                                                                                key={i}
-                                                                                                                initial={{ opacity: 0, x: -10 }}
-                                                                                                                animate={{ opacity: 1, x: 0 }}
-                                                                                                                transition={{ delay: i * 0.05 }}
-                                                                                                                className="flex gap-3"
-                                                                                                            >
-                                                                                                                <div
-                                                                                                                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white mt-0.5"
-                                                                                                                    style={{ backgroundColor: branch.color }}
-                                                                                                                >
-                                                                                                                    {i + 1}
-                                                                                                                </div>
-                                                                                                                <div className="flex-1 min-w-0">
-                                                                                                                    <div className="flex flex-wrap items-center gap-2">
-                                                                                                                        <p className="text-sm font-semibold text-[var(--color-text)]">{ms.title}</p>
-                                                                                                                        <span
-                                                                                                                            className="rounded-full px-2 py-0.5 text-xs"
-                                                                                                                            style={{ color: branch.color, backgroundColor: `${branch.color}15`, border: `1px solid ${branch.color}30` }}
-                                                                                                                        >
-                                                                                                                            {ms.timeframe}
-                                                                                                                        </span>
-                                                                                                                    </div>
-                                                                                                                    {ms.skills.length > 0 && (
-                                                                                                                        <div className="mt-1.5 flex flex-wrap gap-1">
-                                                                                                                            {ms.skills.map((skill, j) => (
-                                                                                                                                <span key={j} className="rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-2 py-0.5 text-xs text-[var(--color-text-muted)]">
-                                                                                                                                    {skill}
-                                                                                                                                </span>
-                                                                                                                            ))}
-                                                                                                                        </div>
-                                                                                                                    )}
-                                                                                                                    {ms.actions.length > 0 && (
-                                                                                                                        <ul className="mt-2 space-y-1">
-                                                                                                                            {ms.actions.map((action, j) => (
-                                                                                                                                <li key={j} className="flex items-start gap-2 text-xs text-[var(--color-text-muted)]">
-                                                                                                                                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: branch.color }} />
-                                                                                                                                    {action}
-                                                                                                                                </li>
-                                                                                                                            ))}
-                                                                                                                        </ul>
-                                                                                                                    )}
-                                                                                                                </div>
-                                                                                                            </motion.div>
-                                                                                                        ))}
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </motion.div>
-                                                                                        )}
-                                                                                    </AnimatePresence>
-                                                                                </div>
-                                                                            );
-                                                                        })}
-                                                                    </div>
-
-                                                                    <div className="pt-2 border-t border-[var(--color-border)]">
-                                                                        <Link href="/career-tree" className="text-sm font-medium text-[var(--color-primary-600)] hover:underline">
-                                                                            Generate a new tree →
-                                                                        </Link>
-                                                                    </div>
                                                                 </div>
-                                                            </motion.div>
-                                                        )}
-                                                    </AnimatePresence>
-                                                </motion.div>
-                                            );
-                                        })}
-                                    </AnimatePresence>
-                                )}
+                                                            );
+                                                        })}
+                                                    </div>
 
-                                {/* Footer */}
-                                <div className="pt-1 text-right">
-                                    <Link href="/career-tree" className="text-xs font-medium text-[var(--color-primary-600)] hover:underline">
-                                        Generate new tree →
-                                    </Link>
-                                </div>
+                                                    <div style={{ paddingTop: "12px", borderTop: "1px solid var(--color-hairline)" }}>
+                                                        <Link href="/career-tree" className="type-caption" style={{ color: "var(--color-link)", textDecoration: "none" }}>
+                                                            GENERATE A NEW TREE →
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
                             </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </motion.div>
+                        )}
+
+                        {/* Footer */}
+                        <div style={{ paddingTop: "8px", textAlign: "right" }}>
+                            <Link href="/career-tree" className="type-caption" style={{ color: "var(--color-link)", textDecoration: "none" }}>
+                                GENERATE NEW TREE →
+                            </Link>
+                        </div>
+                    </div>
+                )}
+            </div>
 
             <ConfirmModal
                 open={!!confirmDeleteId}

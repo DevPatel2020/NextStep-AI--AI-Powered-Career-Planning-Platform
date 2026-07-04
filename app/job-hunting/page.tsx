@@ -5,6 +5,17 @@ import Link from "next/link";
 import { PageShell } from "@/components/layout/PageShell";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+
+type JobStatus = "saved" | "applied" | "interviewing" | "offer" | "rejected";
+
+const statusVariant: Record<JobStatus, "default" | "primary" | "secondary" | "success" | "error"> = {
+  saved: "default",
+  applied: "primary",
+  interviewing: "secondary",
+  offer: "success",
+  rejected: "error",
+};
 
 // ─── Job Titles / Keywords List ───────────────────────────────────────────────
 
@@ -687,7 +698,7 @@ export default function JobHuntingPage() {
       maxWidth="xl"
     >
       {/* Stats bar */}
-      <section className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "24px", marginBottom: "40px" }}>
         {[
           { label: "Saved", value: stats.saved },
           { label: "Applied", value: stats.applied },
@@ -695,24 +706,30 @@ export default function JobHuntingPage() {
           { label: "Offers", value: stats.offer },
         ].map(({ label, value }) => (
           <Card key={label} padding="md">
-            <p className="text-2xl font-bold text-[var(--color-text)]">{value}</p>
-            <p className="text-sm text-[var(--color-text-muted)]">{label}</p>
+            <p className="type-display-md" style={{ color: "var(--color-ink)", margin: 0 }}>{value}</p>
+            <p className="type-caption" style={{ color: "var(--color-muted)", margin: "4px 0 0" }}>{label.toUpperCase()}</p>
           </Card>
         ))}
       </section>
 
       {/* Tabs */}
-      <div className="mb-6 flex gap-2 border-b border-[var(--color-border)]">
+      <div style={{ display: "flex", gap: "24px", borderBottom: "1px solid var(--color-hairline)", marginBottom: "32px" }}>
         {(["discover", "saved"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-medium transition-colors ${tab === t
-              ? "border-b-2 border-[var(--color-primary-600)] text-[var(--color-primary-600)]"
-              : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-              }`}
+            className="type-nav"
+            style={{
+              padding: "12px 0",
+              background: "transparent",
+              border: "none",
+              borderBottom: tab === t ? "1px solid var(--color-ink)" : "1px solid transparent",
+              color: tab === t ? "var(--color-ink)" : "var(--color-muted)",
+              cursor: "pointer",
+              transition: "color 0.15s ease",
+            }}
           >
-            {t === "discover" ? "🔍 Discover Jobs" : `📋 My Applications (${savedJobs.length})`}
+            {t === "discover" ? "DISCOVER JOBS" : `MY APPLICATIONS (${savedJobs.length})`}
           </button>
         ))}
       </div>
@@ -722,13 +739,15 @@ export default function JobHuntingPage() {
         <div className="space-y-6">
           {/* Search form */}
           <Card padding="md">
-            <form onSubmit={searchJobs} className="space-y-4">
-              {/* Row 1: Job title + Experience + Work Mode on one line */}
-              <div className="flex flex-wrap gap-3 items-end">
-                {/* Job title searchable dropdown — grows wider */}
-                <div ref={jobInputRef} className="relative flex-1 min-w-[160px]">
-                  <label className="mb-1 block text-sm font-medium text-[var(--color-text)]">
-                    Job title or keywords
+            <form onSubmit={searchJobs} style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+              
+              {/* Row 1: Job title + Experience + Work Mode */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "24px", alignItems: "end" }}>
+                
+                {/* Job title dropdown */}
+                <div ref={jobInputRef} style={{ position: "relative" }}>
+                  <label className="type-caption" style={{ color: "var(--color-muted)", marginBottom: "8px", display: "block" }}>
+                    JOB TITLE OR KEYWORDS
                   </label>
                   <input
                     type="text"
@@ -736,19 +755,52 @@ export default function JobHuntingPage() {
                     onChange={(e) => { setQuery(e.target.value); setJobDropdownOpen(e.target.value.trim().length > 0); }}
                     onFocus={() => { if (query.trim().length > 0) setJobDropdownOpen(true); }}
                     placeholder="e.g. Software Engineer, Data Analyst"
-                    className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-400)]"
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      background: "transparent",
+                      color: "var(--color-ink)",
+                      border: "none",
+                      borderBottom: "1px solid var(--color-hairline-strong)",
+                      borderRadius: "0",
+                      padding: "12px 0",
+                      height: "44px",
+                      fontFamily: "var(--font-body)",
+                      fontSize: "16px",
+                      outline: "none",
+                    }}
                   />
                   {jobDropdownOpen && (
-                    <div className="absolute z-30 mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg max-h-60 overflow-y-auto">
-                      {/* Custom query option if typed something not in list */}
+                    <div style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: 0,
+                      right: 0,
+                      zIndex: 30,
+                      background: "var(--color-surface-card)",
+                      border: "1px solid var(--color-hairline-strong)",
+                      borderRadius: "0px",
+                      maxHeight: "240px",
+                      overflowY: "auto",
+                    }}>
                       {query.trim() && !JOB_TITLES.some((t) => t.toLowerCase() === query.toLowerCase()) && (
                         <button
                           type="button"
                           onMouseDown={() => { setJobDropdownOpen(false); }}
-                          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)] border-b border-[var(--color-border)]"
+                          className="type-caption"
+                          style={{
+                            display: "flex",
+                            width: "100%",
+                            padding: "12px 16px",
+                            background: "transparent",
+                            border: "none",
+                            borderBottom: "1px solid var(--color-hairline)",
+                            color: "var(--color-link)",
+                            cursor: "pointer",
+                            textAlign: "left",
+                          }}
                         >
-                          <span>🔍</span>
-                          <span>Search for &ldquo;<strong>{query}</strong>&rdquo;</span>
+                          SEARCH FOR "{query.toUpperCase()}"
                         </button>
                       )}
                       {filteredTitles.length > 0 ? (
@@ -757,35 +809,78 @@ export default function JobHuntingPage() {
                             key={`${idx}-${title}`}
                             type="button"
                             onMouseDown={() => { setQuery(title); setJobDropdownOpen(false); }}
-                            className="w-full px-3 py-2 text-left text-sm text-[var(--color-text)] hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)] transition-colors"
+                            className="type-body-sm"
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              padding: "10px 16px",
+                              background: "transparent",
+                              border: "none",
+                              color: "var(--color-body)",
+                              cursor: "pointer",
+                              textAlign: "left",
+                            }}
+                            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-ink)")}
+                            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-body)")}
                           >
                             {title}
                           </button>
                         ))
                       ) : (
-                        <p className="px-3 py-3 text-sm text-[var(--color-text-muted)]">No matches — press Search to use your query.</p>
+                        <p className="type-body-sm" style={{ padding: "12px 16px", color: "var(--color-muted)", margin: 0 }}>
+                          No matches found.
+                        </p>
                       )}
                     </div>
                   )}
                 </div>
 
                 {/* Experience */}
-                <div ref={experienceRef} className="relative flex-1 min-w-[160px]">
-                  <label className="mb-1 block text-sm font-medium text-[var(--color-text)]">
-                    Experience
+                <div ref={experienceRef} style={{ position: "relative" }}>
+                  <label className="type-caption" style={{ color: "var(--color-muted)", marginBottom: "8px", display: "block" }}>
+                    EXPERIENCE
                   </label>
                   <button
                     type="button"
                     onClick={() => setExperienceOpen(!experienceOpen)}
-                    className="flex w-full items-center justify-between rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-400)]"
+                    style={{
+                      display: "flex",
+                      width: "100%",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      background: "transparent",
+                      border: "none",
+                      borderBottom: "1px solid var(--color-hairline-strong)",
+                      borderRadius: "0",
+                      padding: "12px 0",
+                      height: "44px",
+                      color: "var(--color-ink)",
+                      cursor: "pointer",
+                      fontFamily: "var(--font-body)",
+                      fontSize: "16px",
+                      textAlign: "left",
+                    }}
                   >
-                    <span className="truncate">
+                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {EXPERIENCE_OPTIONS.find((opt) => opt.value === experience)?.label || "Fresher"}
                     </span>
-                    <svg className="h-4 w-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    <svg width="10" height="6" fill="none" stroke="currentColor" viewBox="0 0 10 6" style={{ opacity: 0.5 }}>
+                      <path d="M1 1l4 4 4-4" strokeWidth="1.5" />
+                    </svg>
                   </button>
                   {experienceOpen && (
-                    <div className="absolute z-30 mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg max-h-52 overflow-y-auto">
+                    <div style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: 0,
+                      right: 0,
+                      zIndex: 30,
+                      background: "var(--color-surface-card)",
+                      border: "1px solid var(--color-hairline-strong)",
+                      borderRadius: "0px",
+                      maxHeight: "200px",
+                      overflowY: "auto",
+                    }}>
                       {EXPERIENCE_OPTIONS.map((opt) => (
                         <button
                           key={opt.value}
@@ -794,8 +889,18 @@ export default function JobHuntingPage() {
                             setExperience(opt.value);
                             setExperienceOpen(false);
                           }}
-                          className={`w-full px-3 py-2 text-left text-sm hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)] transition-colors ${opt.value === experience ? "font-semibold text-[var(--color-primary-600)]" : "text-[var(--color-text)]"
-                            }`}
+                          className="type-body-sm"
+                          style={{
+                            display: "block",
+                            width: "100%",
+                            padding: "10px 16px",
+                            background: "transparent",
+                            border: "none",
+                            color: opt.value === experience ? "var(--color-ink)" : "var(--color-body)",
+                            cursor: "pointer",
+                            textAlign: "left",
+                            fontWeight: opt.value === experience ? 500 : 400,
+                          }}
                         >
                           {opt.label}
                         </button>
@@ -805,22 +910,51 @@ export default function JobHuntingPage() {
                 </div>
 
                 {/* Work Mode */}
-                <div ref={workModeRef} className="relative flex-1 min-w-[160px]">
-                  <label className="mb-1 block text-sm font-medium text-[var(--color-text)]">
-                    Work Mode
+                <div ref={workModeRef} style={{ position: "relative" }}>
+                  <label className="type-caption" style={{ color: "var(--color-muted)", marginBottom: "8px", display: "block" }}>
+                    WORK MODE
                   </label>
                   <button
                     type="button"
                     onClick={() => setWorkModeOpen(!workModeOpen)}
-                    className="flex w-full items-center justify-between rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-400)]"
+                    style={{
+                      display: "flex",
+                      width: "100%",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      background: "transparent",
+                      border: "none",
+                      borderBottom: "1px solid var(--color-hairline-strong)",
+                      borderRadius: "0",
+                      padding: "12px 0",
+                      height: "44px",
+                      color: "var(--color-ink)",
+                      cursor: "pointer",
+                      fontFamily: "var(--font-body)",
+                      fontSize: "16px",
+                      textAlign: "left",
+                    }}
                   >
-                    <span className="truncate">
+                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {WORK_MODE_OPTIONS.find((opt) => opt.value === workMode)?.label || "Any Work Mode"}
                     </span>
-                    <svg className="h-4 w-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    <svg width="10" height="6" fill="none" stroke="currentColor" viewBox="0 0 10 6" style={{ opacity: 0.5 }}>
+                      <path d="M1 1l4 4 4-4" strokeWidth="1.5" />
+                    </svg>
                   </button>
                   {workModeOpen && (
-                    <div className="absolute z-30 mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg max-h-52 overflow-y-auto">
+                    <div style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: 0,
+                      right: 0,
+                      zIndex: 30,
+                      background: "var(--color-surface-card)",
+                      border: "1px solid var(--color-hairline-strong)",
+                      borderRadius: "0px",
+                      maxHeight: "200px",
+                      overflowY: "auto",
+                    }}>
                       {WORK_MODE_OPTIONS.map((opt) => (
                         <button
                           key={opt.value}
@@ -829,8 +963,18 @@ export default function JobHuntingPage() {
                             setWorkMode(opt.value);
                             setWorkModeOpen(false);
                           }}
-                          className={`w-full px-3 py-2 text-left text-sm hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)] transition-colors ${opt.value === workMode ? "font-semibold text-[var(--color-primary-600)]" : "text-[var(--color-text)]"
-                            }`}
+                          className="type-body-sm"
+                          style={{
+                            display: "block",
+                            width: "100%",
+                            padding: "10px 16px",
+                            background: "transparent",
+                            border: "none",
+                            color: opt.value === workMode ? "var(--color-ink)" : "var(--color-body)",
+                            cursor: "pointer",
+                            textAlign: "left",
+                            fontWeight: opt.value === workMode ? 500 : 400,
+                          }}
                         >
                           {opt.label}
                         </button>
@@ -840,46 +984,84 @@ export default function JobHuntingPage() {
                 </div>
               </div>
 
-              {/* Row 2: Location — searchable typeaheads */}
-              <div className="flex flex-wrap gap-3">
+              {/* Row 2: Location — country, state, city */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "24px" }}>
 
                 {/* Country */}
-                <div ref={countryRef} className="relative flex-1 min-w-[160px]">
-                  <label className="mb-1 block text-sm font-medium text-[var(--color-text)]">Country</label>
+                <div ref={countryRef} style={{ position: "relative" }}>
+                  <label className="type-caption" style={{ color: "var(--color-muted)", marginBottom: "8px", display: "block" }}>COUNTRY</label>
                   <input
                     type="text"
                     value={countryQuery}
                     onChange={(e) => { setCountryQuery(e.target.value); setCountryOpen(true); }}
                     onFocus={() => { setCountryQuery(""); setCountryOpen(true); }}
                     placeholder="Search country…"
-                    className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-400)]"
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      background: "transparent",
+                      color: "var(--color-ink)",
+                      border: "none",
+                      borderBottom: "1px solid var(--color-hairline-strong)",
+                      borderRadius: "0",
+                      padding: "12px 0",
+                      height: "44px",
+                      fontFamily: "var(--font-body)",
+                      fontSize: "16px",
+                      outline: "none",
+                    }}
                   />
                   {countryOpen && (
-                    <div className="absolute z-30 mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg max-h-52 overflow-y-auto">
+                    <div style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: 0,
+                      right: 0,
+                      zIndex: 30,
+                      background: "var(--color-surface-card)",
+                      border: "1px solid var(--color-hairline-strong)",
+                      borderRadius: "0px",
+                      maxHeight: "200px",
+                      overflowY: "auto",
+                    }}>
                       {countries
                         .filter((c) => c.toLowerCase().includes(countryQuery.toLowerCase()))
                         .map((c) => (
-                          <button key={c} type="button"
+                          <button
+                            key={c}
+                            type="button"
                             onMouseDown={() => {
                               setCountry(c); setCountryQuery(c);
                               setSelectedState(""); setStateQuery("");
                               setCity(""); setCityQuery("");
                               setCountryOpen(false);
                             }}
-                            className={`w-full px-3 py-2 text-left text-sm hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)] transition-colors ${c === country ? "font-semibold text-[var(--color-primary-600)]" : "text-[var(--color-text)]"
-                              }`}
-                          >{c}</button>
+                            className="type-body-sm"
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              padding: "10px 16px",
+                              background: "transparent",
+                              border: "none",
+                              color: c === country ? "var(--color-ink)" : "var(--color-body)",
+                              cursor: "pointer",
+                              textAlign: "left",
+                              fontWeight: c === country ? 500 : 400,
+                            }}
+                          >
+                            {c}
+                          </button>
                         ))}
                       {countries.filter((c) => c.toLowerCase().includes(countryQuery.toLowerCase())).length === 0 && (
-                        <p className="px-3 py-2 text-sm text-[var(--color-text-muted)]">No countries found</p>
+                        <p className="type-body-sm" style={{ padding: "12px 16px", color: "var(--color-muted)", margin: 0 }}>No countries found</p>
                       )}
                     </div>
                   )}
                 </div>
 
                 {/* State */}
-                <div ref={stateRef} className="relative flex-1 min-w-[160px]">
-                  <label className="mb-1 block text-sm font-medium text-[var(--color-text)]">State / Region</label>
+                <div ref={stateRef} style={{ position: "relative" }}>
+                  <label className="type-caption" style={{ color: "var(--color-muted)", marginBottom: "8px", display: "block" }}>STATE / REGION</label>
                   <input
                     type="text"
                     value={stateQuery}
@@ -887,39 +1069,92 @@ export default function JobHuntingPage() {
                     onFocus={() => { if (country) { setStateQuery(""); setStateOpen(true); } }}
                     disabled={!country}
                     placeholder={country ? "Search state…" : "Select country first"}
-                    className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-400)]"
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      background: "transparent",
+                      color: "var(--color-ink)",
+                      border: "none",
+                      borderBottom: "1px solid var(--color-hairline-strong)",
+                      borderRadius: "0",
+                      padding: "12px 0",
+                      height: "44px",
+                      fontFamily: "var(--font-body)",
+                      fontSize: "16px",
+                      outline: "none",
+                      opacity: country ? 1 : 0.5,
+                    }}
                   />
                   {stateOpen && country && (
-                    <div className="absolute z-30 mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg max-h-52 overflow-y-auto">
+                    <div style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: 0,
+                      right: 0,
+                      zIndex: 30,
+                      background: "var(--color-surface-card)",
+                      border: "1px solid var(--color-hairline-strong)",
+                      borderRadius: "0px",
+                      maxHeight: "200px",
+                      overflowY: "auto",
+                    }}>
                       {stateQuery === "" && (
-                        <button type="button"
+                        <button
+                          type="button"
                           onMouseDown={() => { setSelectedState(""); setStateQuery(""); setCity(""); setCityQuery(""); setStateOpen(false); }}
-                          className="w-full px-3 py-2 text-left text-sm text-[var(--color-text-muted)] hover:bg-[var(--color-primary-50)] border-b border-[var(--color-border)]"
-                        >All states</button>
+                          className="type-caption"
+                          style={{
+                            display: "block",
+                            width: "100%",
+                            padding: "12px 16px",
+                            background: "transparent",
+                            border: "none",
+                            borderBottom: "1px solid var(--color-hairline)",
+                            color: "var(--color-muted)",
+                            cursor: "pointer",
+                            textAlign: "left",
+                          }}
+                        >
+                          ALL STATES
+                        </button>
                       )}
                       {states
                         .filter((s) => s.toLowerCase().includes(stateQuery.toLowerCase()))
                         .map((s) => (
-                          <button key={s} type="button"
+                          <button
+                            key={s}
+                            type="button"
                             onMouseDown={() => {
                               setSelectedState(s); setStateQuery(s);
                               setCity(""); setCityQuery("");
                               setStateOpen(false);
                             }}
-                            className={`w-full px-3 py-2 text-left text-sm hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)] transition-colors ${s === selectedState ? "font-semibold text-[var(--color-primary-600)]" : "text-[var(--color-text)]"
-                              }`}
-                          >{s}</button>
+                            className="type-body-sm"
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              padding: "10px 16px",
+                              background: "transparent",
+                              border: "none",
+                              color: s === selectedState ? "var(--color-ink)" : "var(--color-body)",
+                              cursor: "pointer",
+                              textAlign: "left",
+                              fontWeight: s === selectedState ? 500 : 400,
+                            }}
+                          >
+                            {s}
+                          </button>
                         ))}
                       {states.filter((s) => s.toLowerCase().includes(stateQuery.toLowerCase())).length === 0 && (
-                        <p className="px-3 py-2 text-sm text-[var(--color-text-muted)]">No states found</p>
+                        <p className="type-body-sm" style={{ padding: "12px 16px", color: "var(--color-muted)", margin: 0 }}>No states found</p>
                       )}
                     </div>
                   )}
                 </div>
 
                 {/* City */}
-                <div ref={cityRef} className="relative flex-1 min-w-[160px]">
-                  <label className="mb-1 block text-sm font-medium text-[var(--color-text)]">City</label>
+                <div ref={cityRef} style={{ position: "relative" }}>
+                  <label className="type-caption" style={{ color: "var(--color-muted)", marginBottom: "8px", display: "block" }}>CITY</label>
                   <input
                     type="text"
                     value={cityQuery}
@@ -927,27 +1162,80 @@ export default function JobHuntingPage() {
                     onFocus={() => { if (selectedState) { setCityQuery(""); setCityOpen(true); } }}
                     disabled={!selectedState}
                     placeholder={selectedState ? "Search city…" : "Select state first"}
-                    className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-400)]"
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      background: "transparent",
+                      color: "var(--color-ink)",
+                      border: "none",
+                      borderBottom: "1px solid var(--color-hairline-strong)",
+                      borderRadius: "0",
+                      padding: "12px 0",
+                      height: "44px",
+                      fontFamily: "var(--font-body)",
+                      fontSize: "16px",
+                      outline: "none",
+                      opacity: selectedState ? 1 : 0.5,
+                    }}
                   />
                   {cityOpen && selectedState && (
-                    <div className="absolute z-30 mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg max-h-52 overflow-y-auto">
+                    <div style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: 0,
+                      right: 0,
+                      zIndex: 30,
+                      background: "var(--color-surface-card)",
+                      border: "1px solid var(--color-hairline-strong)",
+                      borderRadius: "0px",
+                      maxHeight: "200px",
+                      overflowY: "auto",
+                    }}>
                       {cityQuery === "" && (
-                        <button type="button"
+                        <button
+                          type="button"
                           onMouseDown={() => { setCity(""); setCityQuery(""); setCityOpen(false); }}
-                          className="w-full px-3 py-2 text-left text-sm text-[var(--color-text-muted)] hover:bg-[var(--color-primary-50)] border-b border-[var(--color-border)]"
-                        >All cities</button>
+                          className="type-caption"
+                          style={{
+                            display: "block",
+                            width: "100%",
+                            padding: "12px 16px",
+                            background: "transparent",
+                            border: "none",
+                            borderBottom: "1px solid var(--color-hairline)",
+                            color: "var(--color-muted)",
+                            cursor: "pointer",
+                            textAlign: "left",
+                          }}
+                        >
+                          ALL CITIES
+                        </button>
                       )}
                       {cities
                         .filter((c) => c.toLowerCase().includes(cityQuery.toLowerCase()))
                         .map((c) => (
-                          <button key={c} type="button"
+                          <button
+                            key={c}
+                            type="button"
                             onMouseDown={() => { setCity(c); setCityQuery(c); setCityOpen(false); }}
-                            className={`w-full px-3 py-2 text-left text-sm hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)] transition-colors ${c === city ? "font-semibold text-[var(--color-primary-600)]" : "text-[var(--color-text)]"
-                              }`}
-                          >{c}</button>
+                            className="type-body-sm"
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              padding: "10px 16px",
+                              background: "transparent",
+                              border: "none",
+                              color: c === city ? "var(--color-ink)" : "var(--color-body)",
+                              cursor: "pointer",
+                              textAlign: "left",
+                              fontWeight: c === city ? 500 : 400,
+                            }}
+                          >
+                            {c}
+                          </button>
                         ))}
                       {cities.filter((c) => c.toLowerCase().includes(cityQuery.toLowerCase())).length === 0 && (
-                        <p className="px-3 py-2 text-sm text-[var(--color-text-muted)]">No cities found</p>
+                        <p className="type-body-sm" style={{ padding: "12px 16px", color: "var(--color-muted)", margin: 0 }}>No cities found</p>
                       )}
                     </div>
                   )}
@@ -955,11 +1243,13 @@ export default function JobHuntingPage() {
               </div>
 
               {/* Location preview + Search button */}
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                {locationString && (
-                  <p className="text-xs text-[var(--color-text-muted)]">
-                    📍 Searching in: <span className="font-medium text-[var(--color-text)]">{locationString}</span>
+              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "16px", marginTop: "12px" }}>
+                {locationString ? (
+                  <p className="type-body-sm" style={{ color: "var(--color-muted-soft)", margin: 0 }}>
+                    SEARCHING IN: <span style={{ color: "var(--color-ink)" }}>{locationString.toUpperCase()}</span>
                   </p>
+                ) : (
+                  <div />
                 )}
                 <Button type="submit" variant="primary" loading={discovering}>
                   Search Jobs
@@ -1019,57 +1309,75 @@ export default function JobHuntingPage() {
             </p>
           )}
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredDiscoveredJobs.map((job) => (
-              <Card key={job.id} padding="md" className="flex flex-col gap-3">
-                <div>
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-semibold text-[var(--color-text)] leading-snug">{job.title}</h3>
-                    <span className="shrink-0 rounded-full bg-[var(--color-primary-50)] px-2 py-0.5 text-xs text-[var(--color-primary-600)]">
-                      {job.source}
-                    </span>
+              <Card key={job.id} padding="md" style={{ display: "flex", flexDirection: "column", gap: "16px", height: "100%" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-start", justifyContent: "space-between", gap: "12px" }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h3 className="type-title-md" style={{ color: "var(--color-ink)", margin: 0 }}>
+                      {job.title.toUpperCase()}
+                    </h3>
+                    <p className="type-body-sm" style={{ color: "var(--color-muted)", margin: "4px 0 0" }}>
+                      {job.company}
+                    </p>
                   </div>
-                  <p className="mt-0.5 text-sm text-[var(--color-text-muted)]">{job.company}</p>
-                  <p className="text-xs text-[var(--color-text-muted)]">{job.location}</p>
-                  <div className="mt-1 flex flex-wrap gap-1.5">
-                    {job.type && (
-                      <span className="rounded-full bg-[var(--color-surface-alt,#f3f4f6)] px-2 py-0.5 text-xs text-[var(--color-text-muted)]">{job.type}</span>
-                    )}
-                    {job.isRemote === true && (
-                      <span className="rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 border border-green-200">Remote</span>
-                    )}
-                    {job.isRemote === false && (
-                      <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 border border-blue-200">On-site</span>
-                    )}
-                  </div>
+                  <Badge variant="default" size="sm">
+                    {job.source.toUpperCase()}
+                  </Badge>
+                </div>
+                
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
+                  {job.type && (
+                    <Badge variant="secondary" size="sm">
+                      {job.type.toUpperCase()}
+                    </Badge>
+                  )}
+                  {job.isRemote !== null && (
+                    <Badge variant={job.isRemote ? "success" : "default"} size="sm">
+                      {job.isRemote ? "REMOTE" : "ON-SITE"}
+                    </Badge>
+                  )}
                 </div>
 
-                {/* Experience — extracted intelligently */}
-                <p className="text-xs text-[var(--color-text-muted)]">
-                  <span className="font-medium text-[var(--color-text)]">Years of experience needed: </span>
-                  {extractExperience(job)}
+                <p className="type-body-sm" style={{ color: "var(--color-muted-soft)", margin: 0 }}>
+                  {job.location}
                 </p>
 
-                <p className="text-xs text-[var(--color-text-muted)] line-clamp-3">{job.description}</p>
+                <p className="type-body-sm" style={{ color: "var(--color-muted)", margin: 0 }}>
+                  <span className="type-caption" style={{ color: "var(--color-muted-soft)", fontSize: "10px" }}>YEARS NEEDED: </span>
+                  {extractExperience(job).toUpperCase()}
+                </p>
 
-                <div className="mt-auto flex gap-2">
+                <p className="type-body-sm" style={{ color: "var(--color-muted-soft)", margin: 0, lineClamp: 3, WebkitLineClamp: 3, display: "-webkit-box", WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: 1.5 }}>
+                  {job.description}
+                </p>
+
+                <div style={{ display: "flex", gap: "12px", borderTop: "1px solid var(--color-hairline)", paddingTop: "16px", marginTop: "auto" }}>
                   <a
                     href={job.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center rounded-lg bg-[var(--color-primary-600)] px-3 py-1.5 text-xs font-medium text-white hover:bg-[var(--color-primary-700)]"
+                    className="btn-bugatti"
+                    style={{ height: "36px", padding: "0 20px", fontSize: "11px", flex: 1, textAlign: "center" }}
                   >
-                    View job
+                    VIEW JOB
                   </a>
                   <button
                     onClick={() => saveJob(job)}
                     disabled={savedIds.has(job.id) || savingId === job.id}
-                    className={`inline-flex items-center justify-center rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${savedIds.has(job.id)
-                      ? "border-green-300 bg-green-50 text-green-700 cursor-default"
-                      : "border-[var(--color-border)] hover:border-[var(--color-primary-400)] hover:text-[var(--color-primary-600)]"
-                      }`}
+                    className="btn-bugatti"
+                    style={{
+                      height: "36px",
+                      padding: "0 20px",
+                      fontSize: "11px",
+                      flex: 1,
+                      textAlign: "center",
+                      borderColor: savedIds.has(job.id) ? "var(--color-hairline)" : undefined,
+                      color: savedIds.has(job.id) ? "var(--color-muted-soft)" : undefined,
+                      cursor: savedIds.has(job.id) ? "default" : "pointer",
+                    }}
                   >
-                    {savingId === job.id ? "Saving…" : savedIds.has(job.id) ? "✓ Saved" : "Save"}
+                    {savingId === job.id ? "SAVING…" : savedIds.has(job.id) ? "SAVED" : "SAVE"}
                   </button>
                 </div>
               </Card>
@@ -1078,20 +1386,14 @@ export default function JobHuntingPage() {
 
           {/* Load More */}
           {discoveredJobs.length > 0 && hasMore && !discovering && (
-            <div className="flex justify-center pt-2">
+            <div style={{ display: "flex", justifyContent: "center", marginTop: "32px" }}>
               <button
                 onClick={loadMore}
                 disabled={loadingMore}
-                className="inline-flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-2.5 text-sm font-medium text-[var(--color-text)] hover:border-[var(--color-primary-400)] hover:text-[var(--color-primary-600)] transition-colors disabled:opacity-60"
+                className="btn-bugatti"
+                style={{ height: "44px", padding: "0 32px" }}
               >
-                {loadingMore ? (
-                  <>
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-[var(--color-primary-200)] border-t-[var(--color-primary-600)]" />
-                    Loading more…
-                  </>
-                ) : (
-                  "Load More Jobs →"
-                )}
+                {loadingMore ? "LOADING MORE…" : "LOAD MORE JOBS"}
               </button>
             </div>
           )}
@@ -1100,80 +1402,130 @@ export default function JobHuntingPage() {
 
       {/* ── MY APPLICATIONS TAB ── */}
       {tab === "saved" && (
-        <div className="space-y-4">
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           {loadingSaved && (
-            <div className="py-12 text-center text-[var(--color-text-muted)]">
-              <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-[var(--color-primary-200)] border-t-[var(--color-primary-600)]" />
-              Loading your applications…
+            <div style={{ padding: "48px 0", textAlign: "center", color: "var(--color-muted)" }}>
+              <p className="type-caption" style={{ margin: 0 }}>LOADING YOUR APPLICATIONS...</p>
             </div>
           )}
 
           {!loadingSaved && savedJobs.length === 0 && (
-            <div className="rounded-xl border border-dashed border-[var(--color-border)] py-16 text-center">
-              <p className="text-2xl">📋</p>
-              <p className="mt-2 font-medium text-[var(--color-text)]">No saved jobs yet</p>
-              <p className="text-sm text-[var(--color-text-muted)]">
+            <div style={{ border: "1px dashed var(--color-hairline-strong)", padding: "64px 24px", textAlign: "center" }}>
+              <p className="type-display-sm" style={{ color: "var(--color-ink)", margin: 0 }}>NO SAVED JOBS YET</p>
+              <p className="type-body-sm" style={{ color: "var(--color-muted)", marginTop: "8px", marginBottom: "24px" }}>
                 Search for jobs and click "Save" to track them here.
               </p>
               <button
                 onClick={() => setTab("discover")}
-                className="mt-4 text-sm font-medium text-[var(--color-primary-600)] hover:underline"
+                className="type-caption"
+                style={{ background: "transparent", border: "none", color: "var(--color-link)", cursor: "pointer" }}
               >
-                Go to Discover →
+                GO TO DISCOVER →
               </button>
             </div>
           )}
 
           {savedJobs.map((job) => (
             <Card key={job.id} padding="md">
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-semibold text-[var(--color-text)]">{job.title}</h3>
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[job.status] ?? "bg-gray-100 text-gray-700"}`}>
-                      {job.status}
-                    </span>
+              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "24px" }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px" }}>
+                    <h3 className="type-title-md" style={{ color: "var(--color-ink)", margin: 0 }}>{job.title.toUpperCase()}</h3>
+                    <Badge variant={statusVariant[job.status]} size="sm">
+                      {job.status.toUpperCase()}
+                    </Badge>
                   </div>
-                  <p className="text-sm text-[var(--color-text-muted)]">{job.company}</p>
+                  <p className="type-body-sm" style={{ color: "var(--color-muted)", margin: "4px 0 0" }}>{job.company}</p>
                   {job.location && (
-                    <p className="text-xs text-[var(--color-text-muted)]">{job.location}</p>
+                    <p className="type-body-sm" style={{ color: "var(--color-muted-soft)", margin: "4px 0 0" }}>{job.location}</p>
                   )}
-                  <p className="mt-1 text-xs text-[var(--color-text-muted)]">
-                    Via {job.source} · Updated {new Date(job.updatedAt).toLocaleDateString()}
+                  <p className="type-caption" style={{ color: "var(--color-muted-soft)", marginTop: "8px", margin: 0, fontSize: "10px" }}>
+                    VIA {job.source.toUpperCase()} · UPDATED {new Date(job.updatedAt).toLocaleDateString().toUpperCase()}
                   </p>
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
+                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px" }}>
                   {/* Status selector */}
-                  <select
-                    value={job.status}
-                    disabled={updatingId === job.id}
-                    onChange={(e) => updateStatus(job.id, e.target.value as JobStatus)}
-                    className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-400)]"
-                  >
-                    {STATUS_OPTIONS.map((s) => (
-                      <option key={s.value} value={s.value}>{s.label}</option>
-                    ))}
-                  </select>
+                  <div style={{ position: "relative" }}>
+                    <select
+                      value={job.status}
+                      disabled={updatingId === job.id}
+                      onChange={(e) => updateStatus(job.id, e.target.value as JobStatus)}
+                      style={{
+                        display: "block",
+                        appearance: "none",
+                        width: "140px",
+                        background: "transparent",
+                        color: "var(--color-ink)",
+                        border: "none",
+                        borderBottom: "1px solid var(--color-hairline-strong)",
+                        borderRadius: "0",
+                        padding: "8px 24px 8px 0",
+                        height: "36px",
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "11px",
+                        letterSpacing: "1.5px",
+                        textTransform: "uppercase",
+                        outline: "none",
+                        cursor: "pointer",
+                        colorScheme: "dark",
+                      }}
+                    >
+                      {STATUS_OPTIONS.map((s) => (
+                        <option key={s.value} value={s.value} style={{ background: "var(--color-surface-card)", color: "var(--color-ink)" }}>
+                          {s.label.toUpperCase()}
+                        </option>
+                      ))}
+                    </select>
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        right: "4px",
+                        bottom: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        pointerEvents: "none",
+                        color: "var(--color-muted)",
+                      }}
+                    >
+                      <svg width="8" height="5" fill="none" viewBox="0 0 8 5">
+                        <path stroke="currentColor" strokeWidth="1" d="M1 1l3 3 3-3" />
+                      </svg>
+                    </div>
+                  </div>
+                  
                   <Link
                     href={`/job-hunting/tailor/${job.id}`}
-                    className="inline-flex items-center justify-center rounded-lg bg-[var(--color-secondary-600)] px-3 py-1.5 text-xs font-medium text-white hover:bg-[var(--color-secondary-700)]"
+                    className="btn-bugatti"
+                    style={{ height: "36px", padding: "0 20px", fontSize: "11px", textDecoration: "none" }}
                   >
-                    AI Tailor
+                    AI TAILOR
                   </Link>
                   <a
                     href={job.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center rounded-lg bg-[var(--color-primary-600)] px-3 py-1.5 text-xs font-medium text-white hover:bg-[var(--color-primary-700)]"
+                    className="btn-bugatti"
+                    style={{ height: "36px", padding: "0 20px", fontSize: "11px", textDecoration: "none" }}
                   >
-                    View job
+                    VIEW JOB
                   </a>
                   <button
                     onClick={() => deleteJob(job.id)}
                     title="Remove"
-                    className="text-[var(--color-text-muted)] hover:text-red-500 transition-colors text-lg leading-none"
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      color: "var(--color-muted)",
+                      cursor: "pointer",
+                      fontSize: "24px",
+                      lineHeight: "1",
+                      padding: "0 8px",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-error)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-muted)")}
                   >
-                    ×
+                    &times;
                   </button>
                 </div>
               </div>

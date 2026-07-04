@@ -196,7 +196,7 @@ export default function SignIn() {
         </div>
       }
     >
-      <SignInForm />
+      <SignInContent />
     </Suspense>
   );
 }

@@ -1,5 +1,7 @@
 # CareerSence 🚀
 
+Demo - https://next-step-ai-ai-powered-career-planning-platform-q50rs3mp4.vercel.app?_vercel_share=teVpKCQ2j5wf6YEi2HDnomPaKgbAKFDN
+
 **AI-Powered Career Planning & Job Hunting Platform**
 
 CareerSence is a modern web application designed to help individuals navigate their professional journey using artificial intelligence. Whether you are a student, a recent graduate, or a career switcher, CareerSence provides personalized roadmaps, visual career paths, and job tracking tools to help you succeed.

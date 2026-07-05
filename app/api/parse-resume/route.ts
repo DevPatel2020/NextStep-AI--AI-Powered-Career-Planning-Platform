@@ -19,17 +19,9 @@ export async function POST(req: NextRequest) {
 
         if (file.type === "application/pdf") {
             try {
-                // Use dynamic import for pdf-parse as it may cause issues at top-level
-                const { PDFParse } = await import("pdf-parse");
-
-                // Configure worker to use a local file path to avoid ESM loader restrictions in Node.js
-                const workerPath = "file://" + path.resolve("node_modules/pdfjs-dist/build/pdf.worker.mjs");
-                PDFParse.setWorker(workerPath);
-
-                const parser = new PDFParse({ data: buffer });
-                const data = await parser.getText();
+                const pdfParse = require("pdf-parse");
+                const data = await pdfParse(buffer);
                 text = data.text;
-                await parser.destroy();
             } catch (pdfError: any) {
                 console.error("Internal PDF parsing error:", pdfError);
                 throw new Error("PDF parsing failed: " + pdfError.message);

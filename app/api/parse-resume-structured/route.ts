@@ -18,13 +18,9 @@ export async function POST(req: NextRequest) {
     let text = "";
 
     if (file.type === "application/pdf") {
-      const { PDFParse } = await import("pdf-parse");
-      const workerPath = "file://" + path.resolve("node_modules/pdfjs-dist/build/pdf.worker.mjs");
-      PDFParse.setWorker(workerPath);
-      const parser = new PDFParse({ data: buffer });
-      const data = await parser.getText();
+      const pdfParse = require("pdf-parse");
+      const data = await pdfParse(buffer);
       text = data.text;
-      await parser.destroy();
     } else if (
       file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
       file.name.endsWith(".docx")

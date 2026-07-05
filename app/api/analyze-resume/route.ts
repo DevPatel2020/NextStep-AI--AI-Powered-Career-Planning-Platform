@@ -34,17 +34,9 @@ export async function POST(req: NextRequest) {
         // 1. Extract Text
         if (file.type === "application/pdf") {
             try {
-                // @ts-ignore
-                const { PDFParse } = await import("pdf-parse");
-                const workerPath = "file://" + path.resolve("node_modules/pdfjs-dist/build/pdf.worker.mjs");
-                // @ts-ignore
-                PDFParse.setWorker(workerPath);
-                // @ts-ignore
-                const parser = new PDFParse({ data: buffer });
-                // @ts-ignore
-                const data = await parser.getText();
+                const pdfParse = require("pdf-parse");
+                const data = await pdfParse(buffer);
                 text = data.text;
-                await parser.destroy();
             } catch (pdfError: any) {
                 console.error("Internal PDF parsing error:", pdfError);
                 throw new Error("PDF parsing failed: " + pdfError.message);

@@ -1,5 +1,6 @@
 # CareerSence 🚀
 
+**Demo:** [https://next-step-ai-ai-powered-career-plan.vercel.app](https://next-step-ai-ai-powered-career-plan.vercel.app)
 
 **AI-Powered Career Planning & Job Hunting Platform**
 

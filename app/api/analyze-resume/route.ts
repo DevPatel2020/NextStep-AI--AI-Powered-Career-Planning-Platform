@@ -34,6 +34,11 @@ export async function POST(req: NextRequest) {
         // 1. Extract Text
         if (file.type === "application/pdf") {
             try {
+                if (typeof global !== "undefined" && !(global as any).DOMMatrix) {
+                    (global as any).DOMMatrix = class DOMMatrix {
+                        a=1;b=0;c=0;d=1;e=0;f=0;
+                    };
+                }
                 const pdfParse = require("pdf-parse");
                 const data = await pdfParse(buffer);
                 text = data.text;

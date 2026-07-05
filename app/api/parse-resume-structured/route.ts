@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
               a=1;b=0;c=0;d=1;e=0;f=0;
           };
       }
-      const pdfParse = require("pdf-parse");
+      const pdfParse = require("pdf-parse/lib/pdf-parse.js");
       const data = await pdfParse(buffer);
       text = data.text;
     } else if (

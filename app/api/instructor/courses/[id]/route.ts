@@ -18,7 +18,7 @@ export async function GET(req: NextRequest, props: { params: Promise<{ id: strin
         where: {
             id: params.id,
             OR: [
-                { authorId: (session.user as any).id },
+                { authorId: session.user.id },
                 { status: "PUBLISHED" },
             ],
         },
@@ -41,13 +41,32 @@ export async function PUT(req: NextRequest, props: { params: Promise<{ id: strin
     const session = await getServerSession(authOptions);
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const course = await verifyCourseOwner(params.id, (session.user as any).id);
+    const course = await verifyCourseOwner(params.id, session.user.id);
     if (!course) return NextResponse.json({ error: "Not found or no permission" }, { status: 403 });
 
-    const { title, description, price, coverImage } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const data: { title?: string; description?: string; price?: number; coverImage?: string | null } = {};
+    if (body.title !== undefined) {
+        if (typeof body.title !== "string" || !body.title.trim())
+            return NextResponse.json({ error: "Title cannot be empty" }, { status: 400 });
+        data.title = body.title.trim().slice(0, 200);
+    }
+    if (body.description !== undefined) data.description = String(body.description ?? "");
+    if (body.price !== undefined) {
+        const price = Number(body.price);
+        if (!Number.isFinite(price) || price < 0)
+            return NextResponse.json({ error: "Price must be a non-negative number" }, { status: 400 });
+        data.price = price;
+    }
+    if (body.coverImage !== undefined) data.coverImage = body.coverImage ? String(body.coverImage) : null;
+
+    // Editing a live course sends it back through admin review so unreviewed
+    // content can't be swapped into a PUBLISHED course.
+    const status = course.status === "PUBLISHED" ? "PENDING" : undefined;
+
     const updated = await prisma.course.update({
         where: { id: params.id },
-        data: { title, description, price, coverImage },
+        data: { ...data, ...(status && { status }) },
     });
     return NextResponse.json({ course: updated });
 }
@@ -58,7 +77,7 @@ export async function DELETE(req: NextRequest, props: { params: Promise<{ id: st
     const session = await getServerSession(authOptions);
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const course = await verifyCourseOwner(params.id, (session.user as any).id);
+    const course = await verifyCourseOwner(params.id, session.user.id);
     if (!course) return NextResponse.json({ error: "Not found or no permission" }, { status: 403 });
     if (course.status !== "DRAFT") return NextResponse.json({ error: "Only DRAFT courses can be deleted" }, { status: 400 });
 

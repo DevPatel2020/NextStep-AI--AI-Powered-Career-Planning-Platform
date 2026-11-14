@@ -2,21 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import path from "path";
-// pdf-parse is imported dynamically in the POST handler
-// @ts-ignore
-import mammoth from "mammoth";
+import { UploadError, extractResumeText, getUploadedFile } from "@/lib/uploads";
 
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
+// Bound prompt size (and cost) for unusually long documents.
+const MAX_RESUME_CHARS = 30_000;
+
+/** LLM output is untrusted: coerce to an integer in [0, 100]. */
+function clampScore(value: unknown): number {
+    const n = Math.round(Number(value));
+    return Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 0;
+}
 
 export async function POST(req: NextRequest) {
     try {
         const formData = await req.formData();
-        const file = formData.get("file") as File;
-
-        if (!file) {
-            return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
-        }
+        const file = getUploadedFile(formData.get("file"));
 
         const apiKey = process.env.GROQ_API_KEY;
         if (!apiKey) {
@@ -26,40 +27,8 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-
-        let text = "";
-
-        // 1. Extract Text
-        if (file.type === "application/pdf") {
-            try {
-                if (typeof global !== "undefined" && !(global as any).DOMMatrix) {
-                    (global as any).DOMMatrix = class DOMMatrix {
-                        a=1;b=0;c=0;d=1;e=0;f=0;
-                    };
-                }
-                const pdfParse = require("pdf-parse/lib/pdf-parse.js");
-                const data = await pdfParse(buffer);
-                text = data.text;
-            } catch (pdfError: any) {
-                console.error("Internal PDF parsing error:", pdfError);
-                throw new Error("PDF parsing failed: " + pdfError.message);
-            }
-        } else if (
-            file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-            file.name.endsWith(".docx")
-        ) {
-            const result = await mammoth.extractRawText({ buffer });
-            text = result.value;
-        } else if (file.type === "text/plain" || file.name.endsWith(".txt")) {
-            text = buffer.toString("utf-8");
-        } else {
-            return NextResponse.json(
-                { error: "Unsupported file type. Please upload a .txt, .pdf, or .docx file." },
-                { status: 400 }
-            );
-        }
+        // 1. Extract Text (validates type and size)
+        const text = await extractResumeText(file);
 
         // 2. Validate if the uploaded text looks like a resume
         if (text.trim().length < 50) {
@@ -137,7 +106,7 @@ Important instructions:
 * CRITICAL: Base your entire analysis ONLY on the provided Resume Text. Do NOT invent, hallucinate, or assume any skills, experiences, projects, or education that are not explicitly written in the resume. If sections are missing, explicitly state that they are missing instead of guessing.
 
 Resume Text:
-${text}
+${text.slice(0, MAX_RESUME_CHARS)}
 `;
 
         const response = await fetch(GROQ_URL, {
@@ -189,11 +158,11 @@ ${text}
             }
         }
 
-        let analysis: any;
+        let analysis: { overallScore?: unknown; subScores?: unknown; markdownReport?: string };
         try {
             analysis = JSON.parse(cleanedJson);
             analysis.markdownReport = markdownReport;
-        } catch (e) {
+        } catch {
             console.error("Failed JSON String:", cleanedJson);
             throw new Error("Failed to parse Groq response into JSON");
         }
@@ -202,12 +171,11 @@ ${text}
         const session = await getServerSession(authOptions);
         if (session?.user?.id) {
             try {
-                // @ts-ignore - Prisma types might not have caught up in the IDE yet
                 await prisma.resumeAnalysis.create({
                     data: {
                         userId: session.user.id,
-                        fileName: file.name,
-                        overallScore: analysis.overallScore || 0,
+                        fileName: file?.name ?? "resume",
+                        overallScore: clampScore(analysis.overallScore),
                         subScores: JSON.stringify(analysis.subScores || {}),
                         markdownReport: analysis.markdownReport || "",
                     }
@@ -220,10 +188,13 @@ ${text}
 
         return NextResponse.json({ analysis });
 
-    } catch (error: any) {
+    } catch (error) {
+        if (error instanceof UploadError) {
+            return NextResponse.json({ error: error.message }, { status: error.status });
+        }
         console.error("Resume analysis error:", error);
         return NextResponse.json(
-            { error: "Failed to analyze resume: " + error.message },
+            { error: "Failed to analyze resume. Please try again." },
             { status: 500 }
         );
     }
@@ -241,20 +212,18 @@ export async function DELETE(req: NextRequest) {
 
         if (id) {
             // Delete a specific record (must belong to this user)
-            // @ts-ignore
             await prisma.resumeAnalysis.deleteMany({
                 where: { id, userId: session.user.id },
             });
         } else {
             // Delete ALL resume analyses for this user
-            // @ts-ignore
             await prisma.resumeAnalysis.deleteMany({
                 where: { userId: session.user.id },
             });
         }
 
         return NextResponse.json({ ok: true });
-    } catch (error: any) {
+    } catch (error) {
         console.error("Delete resume analysis error:", error);
         return NextResponse.json({ error: "Failed to delete." }, { status: 500 });
     }

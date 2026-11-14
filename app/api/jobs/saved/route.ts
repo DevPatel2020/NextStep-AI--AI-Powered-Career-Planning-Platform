@@ -25,7 +25,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
+    const body = await request.json().catch(() => ({}));
     const { jobId, title, company, location, url, source } = body;
 
     if (!jobId || !title || !company || !url) {
@@ -57,7 +57,7 @@ export async function PATCH(request: Request) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
+    const body = await request.json().catch(() => ({}));
     const { id, status } = body;
 
     const validStatuses = ["saved", "applied", "interviewing", "offer", "rejected"];

@@ -3,28 +3,29 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { encode } from "next-auth/jwt";
 import { cookies } from "next/headers";
+import { getEnvAdmin, matchesEnvAdmin } from "@/lib/admin-credentials";
+import { isAdminUser } from "@/lib/roles";
 
-const ADMIN_EMAIL = (process.env.ADMIN_EMAIL ?? "jay@admin.com").toLowerCase();
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "admin@123";
+const ADMIN_SESSION_SECONDS = 8 * 60 * 60; // 8 hours
 
 export async function POST(req: NextRequest) {
     try {
-        const { email, password } = await req.json();
+        const { email, password } = await req.json().catch(() => ({}));
 
-        if (!email || !password) {
+        if (typeof email !== "string" || typeof password !== "string" || !email || !password) {
             return NextResponse.json({ error: "Missing credentials" }, { status: 400 });
         }
 
         const emailLower = email.trim().toLowerCase();
         let adminPayload = null;
 
-        // 1. Check hardcoded admin
-        if (emailLower === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-            adminPayload = { id: "admin-1", email: ADMIN_EMAIL, name: "Admin", role: "admin" };
+        // 1. Optional bootstrap admin from env (no hardcoded defaults)
+        if (matchesEnvAdmin(emailLower, password)) {
+            adminPayload = { id: "admin-1", email: getEnvAdmin()!.email, name: "Admin", role: "admin" };
         } else {
             // 2. Check DB admin
             const user = await prisma.user.findUnique({ where: { email: emailLower } });
-            if (user && user.password && !(user as any).disabled && ((user as any).isAdmin || user.role?.toLowerCase() === "admin")) {
+            if (user && user.password && !user.disabled && isAdminUser(user)) {
                 const ok = await bcrypt.compare(password, user.password);
                 if (ok) {
                     adminPayload = { id: user.id, email: user.email, name: user.name ?? "Admin", role: "admin" };
@@ -38,8 +39,9 @@ export async function POST(req: NextRequest) {
 
         // Create a secure token specifically for admin
         const token = await encode({
-            token: adminPayload as any,
+            token: adminPayload,
             secret: process.env.NEXTAUTH_SECRET as string,
+            maxAge: ADMIN_SESSION_SECONDS,
         });
 
         // Set cookie
@@ -47,9 +49,9 @@ export async function POST(req: NextRequest) {
         (await cookieStore).set("admin_token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
+            sameSite: "strict",
             path: "/",
-            maxAge: 30 * 24 * 60 * 60, // 30 days
+            maxAge: ADMIN_SESSION_SECONDS,
         });
 
         return NextResponse.json({ success: true });

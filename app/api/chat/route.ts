@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { sanitizeChatMessages } from "@/lib/chat";
 
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "llama-3.3-70b-versatile";
@@ -10,11 +11,21 @@ If someone asks who you are, say you are the Careersence Guide.`;
 
 export async function POST(request: Request) {
     try {
-        const { messages } = await request.json();
+        const { messages } = await request.json().catch(() => ({}));
 
         if (!Array.isArray(messages)) {
             return NextResponse.json(
                 { error: "Invalid request. 'messages' must be an array." },
+                { status: 400 }
+            );
+        }
+
+        // Only user/assistant turns are forwarded, so a client cannot inject
+        // its own "system" message to override the platform prompt.
+        const history = sanitizeChatMessages(messages);
+        if (history.length === 0 || history[history.length - 1].role !== "user") {
+            return NextResponse.json(
+                { error: "Invalid request. The last message must be a non-empty user message." },
                 { status: 400 }
             );
         }
@@ -26,10 +37,7 @@ export async function POST(request: Request) {
 
         const groqMessages = [
             { role: "system", content: SYSTEM_PROMPT },
-            ...messages.map((m: any) => ({
-                role: m.role,
-                content: m.content,
-            })),
+            ...history,
         ];
 
         const response = await fetch(GROQ_URL, {

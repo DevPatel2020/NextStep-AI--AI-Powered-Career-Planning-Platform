@@ -36,9 +36,10 @@ export async function GET(request: Request) {
     }
 
     return NextResponse.json({ savedJob, application });
-  } catch (error: any) {
+  } catch (error) {
+    console.error("Fetch application error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch application data", details: error.message },
+      { error: "Failed to fetch application data" },
       { status: 500 }
     );
   }
@@ -52,10 +53,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
+    const body = await request.json().catch(() => ({}));
     const { savedJobId, resumeText, customJobDescription } = body;
 
-    if (!savedJobId || !resumeText) {
+    if (typeof savedJobId !== "string" || typeof resumeText !== "string" || !savedJobId || !resumeText.trim()) {
       return NextResponse.json(
         { error: "Missing required fields: savedJobId and resumeText are required." },
         { status: 400 }
@@ -76,7 +77,7 @@ export async function POST(request: Request) {
     // 2. If no job description is provided, try to fetch from JSearch API using savedJob.jobId
     if (!jobDescription && process.env.RAPIDAPI_KEY) {
       try {
-        const detailsUrl = `https://jsearch.p.rapidapi.com/job-details?job_id=${savedJob.jobId}`;
+        const detailsUrl = `https://jsearch.p.rapidapi.com/job-details?job_id=${encodeURIComponent(savedJob.jobId)}`;
         const res = await fetch(detailsUrl, {
           headers: {
             "X-RapidAPI-Key": process.env.RAPIDAPI_KEY,
@@ -199,10 +200,10 @@ Generate the tailored resume, cover letter, and screening answers based on the c
       const trimmed = geminiResponseText.trim();
       const withoutFence = trimmed.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
       parsedResult = JSON.parse(withoutFence);
-    } catch (parseError) {
+    } catch {
       console.error("Gemini output parsing failure. Content:", geminiResponseText);
       return NextResponse.json(
-        { error: "Failed to parse AI tailoring output into valid JSON.", details: geminiResponseText },
+        { error: "Failed to parse AI tailoring output into valid JSON. Please try again." },
         { status: 502 }
       );
     }
@@ -229,10 +230,10 @@ Generate the tailored resume, cover letter, and screening answers based on the c
     });
 
     return NextResponse.json({ application });
-  } catch (error: any) {
+  } catch (error) {
     console.error("AI tailoring error:", error);
     return NextResponse.json(
-      { error: "Failed to tailor application", details: error.message },
+      { error: "Failed to tailor application. Please try again." },
       { status: 500 }
     );
   }

@@ -2,9 +2,10 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { getEnvAdmin, matchesEnvAdmin } from "@/lib/admin-credentials";
+import { isAdminUser } from "@/lib/roles";
 
-const ADMIN_EMAIL = (process.env.ADMIN_EMAIL ?? "jay@admin.com").toLowerCase();
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "admin@123";
+const USER_RECHECK_MS = 5 * 60 * 1000; // re-check disabled status every 5 minutes
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -19,11 +20,11 @@ export const authOptions: NextAuthOptions = {
 
         const email = credentials.email.trim().toLowerCase();
 
-        // 1. Check for hardcoded admin credentials first
-        if (email === ADMIN_EMAIL && credentials.password === ADMIN_PASSWORD) {
+        // 1. Optional bootstrap admin from env (no hardcoded defaults)
+        if (matchesEnvAdmin(email, credentials.password)) {
           return {
             id: "admin-1",
-            email: ADMIN_EMAIL,
+            email: getEnvAdmin()!.email,
             name: "Default Admin",
             role: "admin",
           };
@@ -37,10 +38,11 @@ export const authOptions: NextAuthOptions = {
         if (!ok) return null;
 
         // Prevent disabled users from logging in
-        if ((user as any).disabled) return null;
+        if (user.disabled) return null;
 
-        // Detect role: check role field or legacy isAdmin flag
-        const isAdmin = (user as any).isAdmin || user.role?.toLowerCase() === "admin";
+        // Admin access comes ONLY from the server-controlled isAdmin flag.
+        // `user.role` is a self-selected career stage and must never grant privileges.
+        const isAdmin = isAdminUser(user);
 
         return {
           id: user.id,
@@ -61,16 +63,40 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
-        token.role = (user as any).role ?? "user";
+        token.role = user.role ?? "user";
+        token.checkedAt = Date.now();
+        return token;
+      }
+
+      // Periodically re-validate DB users so that disabling or deleting an
+      // account takes effect without waiting for the 30-day JWT to expire.
+      const isDbUser = token.id && token.id !== "admin-1";
+      const stale = !token.checkedAt || Date.now() - token.checkedAt > USER_RECHECK_MS;
+      if (isDbUser && !token.revoked && stale) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { disabled: true },
+          });
+          token.checkedAt = Date.now();
+          if (!dbUser || dbUser.disabled) token.revoked = true;
+        } catch (err) {
+          // Fail open on transient DB errors; the next request will retry.
+          console.error("Session re-validation failed:", err);
+        }
       }
       return token;
     },
     async session({ session, token }) {
+      if (token.revoked) {
+        // Strip identity so every `session.user.id` check rejects the request.
+        return { ...session, user: { id: "" } };
+      }
       if (session.user) {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
         session.user.name = token.name as string;
-        (session.user as any).role = token.role ?? "user";
+        session.user.role = token.role ?? "user";
       }
       return session;
     },

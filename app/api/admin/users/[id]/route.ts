@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { isValidEmail, validatePassword } from "@/lib/validation";
 
 /** GET /api/admin/users/[id] */
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -20,11 +21,11 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
 /** PUT /api/admin/users/[id]  — edit user info or toggle disabled */
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { error } = await requireAdmin();
+  const { session, error } = await requireAdmin();
   if (error) return error;
 
   const { id } = await params;
-  const body = await req.json();
+  const body = await req.json().catch(() => ({}));
   const { name, email, phone, disabled, password } = body as {
     name?: string;
     email?: string;
@@ -33,9 +34,20 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     password?: string;
   };
 
-  // Prevent editing the fake admin account
-  if (id === "admin") {
+  // Prevent editing the env bootstrap admin account
+  if (id === "admin" || id === "admin-1") {
     return NextResponse.json({ error: "Cannot edit the admin account" }, { status: 400 });
+  }
+  // An admin disabling themselves would lock them out mid-session.
+  if (disabled === true && session?.user.id === id) {
+    return NextResponse.json({ error: "You cannot disable your own account" }, { status: 400 });
+  }
+  if (email !== undefined && email.trim() && !isValidEmail(email)) {
+    return NextResponse.json({ error: "Please enter a valid email address" }, { status: 400 });
+  }
+  if (password) {
+    const passwordError = validatePassword(password);
+    if (passwordError) return NextResponse.json({ error: passwordError }, { status: 400 });
   }
 
   const updateData: Record<string, unknown> = {};
@@ -43,7 +55,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (phone !== undefined) updateData.phone = phone;
   if (disabled !== undefined) updateData.disabled = disabled;
   if (email !== undefined && email.trim()) updateData.email = email.trim().toLowerCase();
-  if (password) updateData.password = await bcrypt.hash(password, 10);
+  if (password) updateData.password = await bcrypt.hash(password, 12);
 
   try {
     const updated = await prisma.user.update({
@@ -59,13 +71,16 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
 /** DELETE /api/admin/users/[id] */
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { error } = await requireAdmin();
+  const { session, error } = await requireAdmin();
   if (error) return error;
 
   const { id } = await params;
 
-  if (id === "admin") {
+  if (id === "admin" || id === "admin-1") {
     return NextResponse.json({ error: "Cannot delete the admin account" }, { status: 400 });
+  }
+  if (session?.user.id === id) {
+    return NextResponse.json({ error: "You cannot delete your own account" }, { status: 400 });
   }
 
   try {

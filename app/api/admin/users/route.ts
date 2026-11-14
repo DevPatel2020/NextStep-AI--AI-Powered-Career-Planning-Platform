@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 
 import bcrypt from "bcryptjs";
+import { isValidEmail, parseIntParam, validatePassword } from "@/lib/validation";
 
 const PAGE_SIZE = 10;
 
@@ -12,11 +14,18 @@ export async function POST(req: NextRequest) {
   if (error) return error;
 
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { name, email, password } = body;
 
     if (!email || !password) {
       return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
+    }
+    if (!isValidEmail(email)) {
+      return NextResponse.json({ error: "Please enter a valid email address" }, { status: 400 });
+    }
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      return NextResponse.json({ error: passwordError }, { status: 400 });
     }
 
     const existing = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
@@ -24,30 +33,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User already exists with this email" }, { status: 400 });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     const newUser = await prisma.user.create({
       data: {
-        name: name || undefined,
+        name: typeof name === "string" && name.trim() ? name.trim().slice(0, 100) : undefined,
         email: email.toLowerCase().trim(),
         password: hashedPassword,
-        // @ts-ignore
         isAdmin: true,
-        role: "ADMIN",
       },
       select: {
         id: true,
         name: true,
         email: true,
         role: true,
-        // @ts-ignore
         isAdmin: true,
         createdAt: true,
       }
     });
 
     return NextResponse.json({ message: "Admin created successfully", user: newUser }, { status: 201 });
-  } catch (err: any) {
+  } catch (err) {
     console.error("Failed to create admin:", err);
     return NextResponse.json({ error: "Failed to create admin account" }, { status: 500 });
   }
@@ -59,12 +65,12 @@ export async function GET(req: NextRequest) {
   if (error) return error;
 
   const { searchParams } = req.nextUrl;
-  const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
-  const limit = Math.min(100, parseInt(searchParams.get("limit") ?? String(PAGE_SIZE), 10));
+  const page = parseIntParam(searchParams.get("page"), 1, { min: 1 });
+  const limit = parseIntParam(searchParams.get("limit"), PAGE_SIZE, { min: 1, max: 100 });
   const search = (searchParams.get("search") ?? "").trim();
   const roleFilter = searchParams.get("role")?.toLowerCase();
 
-  const where: any = search
+  const where: Prisma.UserWhereInput = search
     ? {
       OR: [
         { name: { contains: search, mode: "insensitive" as const } },
@@ -74,10 +80,8 @@ export async function GET(req: NextRequest) {
     : {};
 
   if (roleFilter === "admins") {
-    // @ts-ignore
     where.isAdmin = true;
   } else if (roleFilter === "users") {
-    // @ts-ignore
     where.isAdmin = false;
   }
 
@@ -101,7 +105,6 @@ export async function GET(req: NextRequest) {
             savedJobs: true,
             quizSessions: true,
             careerTrees: true,
-            // @ts-ignore
             resumeAnalyses: true,
           },
         },

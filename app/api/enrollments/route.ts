@@ -8,16 +8,16 @@ export async function POST(req: NextRequest) {
     const session = await getServerSession(authOptions);
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { courseId } = await req.json();
-    if (!courseId) return NextResponse.json({ error: "courseId is required" }, { status: 400 });
+    const { courseId } = await req.json().catch(() => ({}));
+    if (typeof courseId !== "string" || !courseId) return NextResponse.json({ error: "courseId is required" }, { status: 400 });
 
     const course = await prisma.course.findFirst({ where: { id: courseId, status: "PUBLISHED" } });
     if (!course) return NextResponse.json({ error: "Course not found or not published" }, { status: 404 });
 
     // Idempotent — upsert ensures no duplicate enrollments
     const enrollment = await prisma.enrollment.upsert({
-        where: { studentId_courseId: { studentId: (session.user as any).id, courseId } },
-        create: { studentId: (session.user as any).id, courseId },
+        where: { studentId_courseId: { studentId: session.user.id, courseId } },
+        create: { studentId: session.user.id, courseId },
         update: {},
     });
     return NextResponse.json({ enrollment });
@@ -29,7 +29,7 @@ export async function GET() {
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const enrollments = await prisma.enrollment.findMany({
-        where: { studentId: (session.user as any).id },
+        where: { studentId: session.user.id },
         include: {
             course: {
                 include: {

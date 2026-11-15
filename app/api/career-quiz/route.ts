@@ -171,7 +171,6 @@ export async function POST(request: Request) {
         // Get authenticated user via session
         const session = await getServerSession(authOptions);
         const userId = session?.user?.id;
-        console.log("[career-quiz] userId:", userId ?? "NONE");
 
         const body = (await request.json()) as RequestBody;
 
@@ -206,7 +205,6 @@ export async function POST(request: Request) {
             let sessionId: string | null = null;
             if (userId) {
                 try {
-                    console.log("[career-quiz] Saving phase1 for userId:", userId);
                     const quiz = await prisma.quizSession.create({
                         data: {
                             userId,
@@ -215,12 +213,9 @@ export async function POST(request: Request) {
                         },
                     });
                     sessionId = quiz.id;
-                    console.log("[career-quiz] Phase1 saved, sessionId:", sessionId);
                 } catch (dbErr) {
                     console.error("[career-quiz] Failed to save phase1 quiz session:", dbErr);
                 }
-            } else {
-                console.log("[career-quiz] Skipping phase1 save — no userId");
             }
 
             return NextResponse.json({ questions: validated, sessionId });
@@ -256,20 +251,21 @@ export async function POST(request: Request) {
             // Save/update the quiz session in DB
             if (userId) {
                 try {
-                    console.log("[career-quiz] Saving results. userId:", userId, "sessionId:", body.sessionId ?? "NONE");
-                    if (body.sessionId) {
-                        await prisma.quizSession.update({
-                            where: { id: body.sessionId },
+                    // Scope the update to the caller's own session. A plain
+                    // update-by-id would let any user overwrite another user's quiz.
+                    const updated = body.sessionId
+                        ? await prisma.quizSession.updateMany({
+                            where: { id: body.sessionId, userId },
                             data: {
                                 phase2Answers: JSON.stringify(
                                     body.allAnswers.filter((a) => a.questionIndex >= 5)
                                 ),
                                 results: JSON.stringify(validated),
                             },
-                        });
-                        console.log("[career-quiz] Updated session:", body.sessionId);
-                    } else {
-                        const created = await prisma.quizSession.create({
+                        })
+                        : { count: 0 };
+                    if (updated.count === 0) {
+                        await prisma.quizSession.create({
                             data: {
                                 userId,
                                 phase1Answers: JSON.stringify(
@@ -281,13 +277,10 @@ export async function POST(request: Request) {
                                 results: JSON.stringify(validated),
                             },
                         });
-                        console.log("[career-quiz] Created new full session:", created.id);
                     }
                 } catch (dbErr) {
                     console.error("[career-quiz] Failed to save quiz results:", dbErr);
                 }
-            } else {
-                console.log("[career-quiz] Skipping results save — no userId");
             }
 
             return NextResponse.json({ results: validated });

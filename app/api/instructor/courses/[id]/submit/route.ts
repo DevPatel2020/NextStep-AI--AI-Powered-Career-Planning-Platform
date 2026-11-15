@@ -10,7 +10,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const course = await prisma.course.findFirst({
-        where: { id: params.id, authorId: (session.user as any).id },
+        where: { id: params.id, authorId: session.user.id },
         include: { sections: { include: { lectures: true } } },
     });
     if (!course) return NextResponse.json({ error: "Not found" }, { status: 404 });

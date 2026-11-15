@@ -62,7 +62,15 @@ CareerSence is a modern web application designed to help individuals navigate th
     GROQ_API_KEY=your_groq_api_key_here
     GEMINI_API_KEY=your_gemini_api_key_here
     GEMINI_MODEL=gemini-2.5-flash # (optional, defaults to gemini-2.5-flash)
+    RAPIDAPI_KEY=your_rapidapi_key_here   # JSearch job search (optional)
+    YOUTUBE_API=your_youtube_api_key_here # learning resources (optional)
+    DEV_API=your_dev_to_api_key_here      # learning resources (optional)
+    # Optional bootstrap admin. There are NO default admin credentials:
+    # if these are unset, only users with isAdmin = true can reach /admin.
+    ADMIN_EMAIL=
+    ADMIN_PASSWORD=
    ```
+   A template with every variable is in [`.env.example`](.env.example).
 
 4. **Run Database Migrations**:
    ```bash
@@ -71,15 +79,30 @@ CareerSence is a modern web application designed to help individuals navigate th
 
 5. **Start the Development Server**:
    ```bash
-   npx prisma migrate dev
+   npm run dev
    ```
    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 6. **Create Admin User** (Optional):
-   ```bash
-   node scripts/make-admin.js admin@example.admin.com
+   Either set `ADMIN_EMAIL` / `ADMIN_PASSWORD` (bootstrap admin), or promote an
+   existing account in the database:
+   ```sql
+   UPDATE "User" SET "isAdmin" = true WHERE email = 'you@example.com';
    ```
-   See [ADMIN_SETUP.md](ADMIN_SETUP.md) for more details on admin access.
+   Admin access is granted **only** by the `isAdmin` flag. The user-editable
+   `role` field (student, career switcher, …) never grants privileges.
+   Admins can then create more admins from **Admin → Admins**.
+
+### Testing & quality checks
+
+```bash
+npm test            # unit + API route tests (Vitest)
+npm run typecheck   # TypeScript, no emit
+npm run lint        # ESLint
+```
+
+CI runs the type-check and tests on every push and pull request
+(see [`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
 
 ---
 

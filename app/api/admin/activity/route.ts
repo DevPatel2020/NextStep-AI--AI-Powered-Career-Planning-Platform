@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
+import { parseIntParam } from "@/lib/validation";
 
 export type ActivityType =
   | "registration"
@@ -35,7 +36,7 @@ export async function GET(req: NextRequest) {
   if (error) return error;
 
   const { searchParams } = req.nextUrl;
-  const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
+  const page = parseIntParam(searchParams.get("page"), 1, { min: 1 });
   const typeFilter = searchParams.get("type") ?? "all";
   const userIdFilter = searchParams.get("userId") ?? "";
   const skip = (page - 1) * PAGE_SIZE;

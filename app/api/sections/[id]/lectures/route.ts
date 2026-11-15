@@ -4,6 +4,9 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import fs from "fs/promises";
 import path from "path";
+import { randomUUID } from "crypto";
+import { courseVisibilityFilter } from "@/lib/course-access";
+import { getUploadedFile, isLectureType, sanitizeFilename, validateLectureFile } from "@/lib/uploads";
 
 // POST /api/sections/[id]/lectures — Add lecture with optional file upload
 export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
@@ -16,24 +19,33 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
         where: { id: params.id },
         include: { course: true },
     });
-    if (!section || section.course.authorId !== (session.user as any).id)
+    if (!section || section.course.authorId !== session.user.id)
         return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     const formData = await req.formData();
-    const title = formData.get("title") as string;
-    const type = formData.get("type") as string; // VIDEO, PDF, QUIZ
-    const textContent = formData.get("textContent") as string;
-    const file = formData.get("file") as File | null;
+    const rawTitle = formData.get("title");
+    const type = formData.get("type"); // VIDEO, PDF, QUIZ, TEXT
+    const rawText = formData.get("textContent");
+    const file = getUploadedFile(formData.get("file"));
 
+    const title = typeof rawTitle === "string" ? rawTitle.trim().slice(0, 200) : "";
+    const textContent = typeof rawText === "string" ? rawText : "";
     if (!title || !type) return NextResponse.json({ error: "title and type are required" }, { status: 400 });
+    if (!isLectureType(type)) return NextResponse.json({ error: "Invalid lecture type" }, { status: 400 });
 
     let contentUrl: string | null = null;
-    if (file && typeof file === "object") {
-        const buffer = Buffer.from(await file.arrayBuffer());
-        const fileName = `${Date.now()}-${file.name.replace(/\s+/g, "_")}`;
-        const uploadDir = path.join(process.cwd(), "public/uploads/lectures");
-        try { await fs.access(uploadDir); } catch { await fs.mkdir(uploadDir, { recursive: true }); }
-        await fs.writeFile(path.join(uploadDir, fileName), buffer);
+    // Files only apply to VIDEO/PDF lectures; ignore a stale file left in the
+    // form after the instructor switched the lecture type.
+    if (file && file.size > 0 && (type === "VIDEO" || type === "PDF")) {
+        const fileError = validateLectureFile(type, file);
+        if (fileError) return NextResponse.json({ error: fileError }, { status: 400 });
+
+        // Never trust the client filename: it could contain "../" segments
+        // (path traversal) or an HTML/script extension served from /public.
+        const fileName = `${Date.now()}-${randomUUID().slice(0, 8)}-${sanitizeFilename(file.name)}`;
+        const uploadDir = path.join(process.cwd(), "public", "uploads", "lectures");
+        await fs.mkdir(uploadDir, { recursive: true });
+        await fs.writeFile(path.join(uploadDir, fileName), Buffer.from(await file.arrayBuffer()));
         contentUrl = `/uploads/lectures/${fileName}`;
     }
 
@@ -55,8 +67,12 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
 // GET /api/sections/[id]/lectures
 export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
+    const session = await getServerSession(authOptions);
     const lectures = await prisma.lecture.findMany({
-        where: { sectionId: params.id },
+        where: {
+            sectionId: params.id,
+            section: { course: courseVisibilityFilter(session?.user?.id || undefined) },
+        },
         orderBy: { order: "asc" },
     });
     return NextResponse.json({ lectures });

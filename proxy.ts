@@ -1,5 +1,4 @@
-import { getToken } from "next-auth/jwt";
-import { decode } from "next-auth/jwt";
+import { getToken, decode } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
@@ -28,7 +27,9 @@ export async function proxy(request: NextRequest) {
         if (decodedAdmin && decodedAdmin.role === "admin") {
           isAdmin = true;
         }
-      } catch (err) { }
+      } catch {
+        // Invalid or expired admin token: treat as not signed in.
+      }
     }
 
     // Admin login page: redirect to dashboard if already admin
@@ -41,7 +42,7 @@ export async function proxy(request: NextRequest) {
 
     // All other /admin/* routes require admin role
     if (!isAdmin) {
-      return NextResponse.redirect(new URL("/signin", request.url));
+      return NextResponse.redirect(new URL("/admin/login", request.url));
     }
     return NextResponse.next();
   }
@@ -55,8 +56,8 @@ export async function proxy(request: NextRequest) {
   const isPublic = publicPaths.includes(pathname);
   const isAuthPage = authPaths.includes(pathname);
 
-  // Not signed in
-  if (!token) {
+  // Not signed in (or account disabled after sign-in)
+  if (!token || token.revoked) {
     if (isPublic) return NextResponse.next();
     const signIn = new URL("/signin", request.url);
     signIn.searchParams.set("callbackUrl", pathname);
@@ -65,7 +66,7 @@ export async function proxy(request: NextRequest) {
 
   // Signed in: redirect away from signin/signup
   if (isAuthPage) {
-    const role = (token as any).role ?? "user";
+    const role = token.role ?? "user";
     if (role === "admin") {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }

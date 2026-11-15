@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { InvalidRoleError, normalizeUserRole } from "@/lib/roles";
+import { isValidEmail, sanitizeStringArray, validatePassword } from "@/lib/validation";
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== "object") {
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    }
     const { name, email, password, role, interests } = body as {
       name?: string;
       email?: string;
@@ -13,18 +18,31 @@ export async function POST(request: Request) {
       interests?: string[];
     };
 
-    const trimmedEmail = email?.trim()?.toLowerCase();
+    const trimmedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
     if (!trimmedEmail || !password) {
       return NextResponse.json(
         { error: "Email and password are required" },
         { status: 400 }
       );
     }
-    if (password.length < 8) {
-      return NextResponse.json(
-        { error: "Password must be at least 8 characters" },
-        { status: 400 }
-      );
+    if (!isValidEmail(trimmedEmail)) {
+      return NextResponse.json({ error: "Please enter a valid email address" }, { status: 400 });
+    }
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      return NextResponse.json({ error: passwordError }, { status: 400 });
+    }
+
+    // `role` is a career stage. Reject anything outside the allowlist so a
+    // client can never self-assign privileged values such as "admin".
+    let normalizedRole: string | null;
+    try {
+      normalizedRole = normalizeUserRole(role) ?? null;
+    } catch (err) {
+      if (err instanceof InvalidRoleError) {
+        return NextResponse.json({ error: err.message }, { status: 400 });
+      }
+      throw err;
     }
 
     const existing = await prisma.user.findUnique({
@@ -38,14 +56,14 @@ export async function POST(request: Request) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
-    const interestsJson = Array.isArray(interests) ? JSON.stringify(interests) : null;
+    const interestsJson = Array.isArray(interests) ? JSON.stringify(sanitizeStringArray(interests)) : null;
 
     const user = await prisma.user.create({
       data: {
         email: trimmedEmail,
         password: hashedPassword,
-        name: name?.trim() || null,
-        role: role || null,
+        name: typeof name === "string" ? name.trim().slice(0, 100) || null : null,
+        role: normalizedRole,
         interests: interestsJson,
       },
     });

@@ -25,5 +25,9 @@ declare module "next-auth/jwt" {
     email?: string | null;
     name?: string | null;
     role?: string | null;
+    /** Epoch ms of the last DB re-validation of this user. */
+    checkedAt?: number;
+    /** Set when the account was disabled/deleted after sign-in. */
+    revoked?: boolean;
   }
 }

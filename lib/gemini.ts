@@ -13,9 +13,9 @@ export async function generateGeminiContent(
     throw new Error("GEMINI_API_KEY is not configured in environment variables.");
   }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(GEMINI_MODEL)}:generateContent`;
 
-  const requestBody: any = {
+  const requestBody: Record<string, unknown> = {
     contents: [
       {
         role: "user",
@@ -58,6 +58,7 @@ export async function generateGeminiContent(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "x-goog-api-key": GEMINI_API_KEY,
       },
       body: JSON.stringify(requestBody),
     });
